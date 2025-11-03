@@ -9,31 +9,31 @@
 <table>
   <tr>
     <td align="center">
-      <img src="./img/leader.png" width="100"><br>
+      <img src="./img/squid.png width="100"><br>
       <b>김황현</b><br>
       팀장 / 데이터 엔지니어<br>
       <sub>전체 프로젝트 기획, 파이프라인 설계 및 모델링 전략 수립</sub>
     </td>
     <td align="center">
-      <img src="./img/patrick.jpeg" width="100"><br>
+      <img src="./img/patric.png" width="100"><br>
       <b>이도경</b><br>
       데이터 분석 담당<br>
       <sub>EDA, 전처리 및 변수 중요도 분석, 시각화 보고서 제작</sub>
     </td>
     <td align="center">
-      <img src="./img/model.png" width="100"><br>
+      <img src="./img/snail.png" width="100"><br>
       <b>이지은</b><br>
       머신러닝 담당<br>
       <sub>모델 학습 및 튜닝, 성능 평가, 피처 엔지니어링</sub>
     </td>
     <td align="center">
-      <img src="./img/deep.png" width="100"><br>
+      <img src="./img/haepari.png" width="100"><br>
       <b>정소영</b><br>
       딥러닝 담당<br>
       <sub>신경망 설계, 딥러닝 모델 구현 및 성능 비교</sub>
     </td>
     <td align="center">
-      <img src="./img/squirrel-removebg-preview (1).png" width="100"><br>
+      <img src="./img/mee.png" width="100"><br>
       <b>최유정</b><br>
       프론트엔드/UI<br>
       <sub>Streamlit 화면 설계 및 발표 자료 제작, README 정리</sub>
