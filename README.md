@@ -6,13 +6,41 @@
 ## 👥 팀원 소개  
 ### 팀명 : Drop Signal Detector (자퇴 시그널 감지조)
 
-| 이름 | 담당 업무 |
-|------|------------|
-| 김황현 | 프로젝트 총괄 / 데이터 파이프라인 설계 / 모델링 전략 수립 |
-| 이도경 | EDA 및 전처리 / 변수 중요도 분석 / 시각화 |
-| 이지은 | 머신러닝 모델링 / 하이퍼파라미터 튜닝 / 성능 검증 |
-| 정소영 | 딥러닝 모델 설계 및 비교 / 결과 리포트 작성 |
-| 최유정 | Streamlit UI 구현 / README 및 발표 자료 제작 |
+<table>
+  <tr>
+    <td align="center">
+      <img src="./img/leader.png" width="100"><br>
+      <b>김황현</b><br>
+      팀장 / 데이터 엔지니어<br>
+      <sub>전체 프로젝트 기획, 파이프라인 설계 및 모델링 전략 수립</sub>
+    </td>
+    <td align="center">
+      <img src="./img/analyst.png" width="100"><br>
+      <b>이도경</b><br>
+      데이터 분석 담당<br>
+      <sub>EDA, 전처리 및 변수 중요도 분석, 시각화 보고서 제작</sub>
+    </td>
+    <td align="center">
+      <img src="./img/model.png" width="100"><br>
+      <b>이지은</b><br>
+      머신러닝 담당<br>
+      <sub>모델 학습 및 튜닝, 성능 평가, 피처 엔지니어링</sub>
+    </td>
+    <td align="center">
+      <img src="./img/deep.png" width="100"><br>
+      <b>정소영</b><br>
+      딥러닝 담당<br>
+      <sub>신경망 설계, 딥러닝 모델 구현 및 성능 비교</sub>
+    </td>
+    <td align="center">
+      <img src="./img/frontend.png" width="100"><br>
+      <b>최유정</b><br>
+      프론트엔드/UI<br>
+      <sub>Streamlit 화면 설계 및 발표 자료 제작, README 정리</sub>
+    </td>
+  </tr>
+</table>
+
 
 🔗 **GitHub Repository**: [SKNETWORKS-FAMILY-AICAMP / SKN20-2nd-4TEAM](https://github.com/SKNETWORKS-FAMILY-AICAMP/SKN20-2nd-4TEAM)
 
