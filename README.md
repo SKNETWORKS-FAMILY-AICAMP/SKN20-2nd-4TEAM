@@ -33,7 +33,7 @@
       <sub>신경망 설계, 딥러닝 모델 구현 및 성능 비교</sub>
     </td>
     <td align="center">
-      <img src="./img/frontend.png" width="100"><br>
+      <img src="./img/squirrel-removebg-preview (1).png" width="100"><br>
       <b>최유정</b><br>
       프론트엔드/UI<br>
       <sub>Streamlit 화면 설계 및 발표 자료 제작, README 정리</sub>
