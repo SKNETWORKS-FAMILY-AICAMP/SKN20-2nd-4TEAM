@@ -33,14 +33,13 @@
       <sub>신경망 설계, 딥러닝 모델 구현 및 성능 비교</sub>
     </td>
     <td align="center">
-      <img src="./img/frontend.png" width="100"><br>
+      <img src="./img/squirrel-removebg-preview (1).png" width="100"><br>
       <b>최유정</b><br>
       프론트엔드/UI<br>
       <sub>Streamlit 화면 설계 및 발표 자료 제작, README 정리</sub>
     </td>
   </tr>
 </table>
-
 
 🔗 **GitHub Repository**: [SKNETWORKS-FAMILY-AICAMP / SKN20-2nd-4TEAM](https://github.com/SKNETWORKS-FAMILY-AICAMP/SKN20-2nd-4TEAM)
 
@@ -141,5 +140,34 @@
 | 정소영 | 프로젝트를 문서화하며 결과물을 정리하는 과정에서 큰 보람을 느꼈습니다. |
 | 최유정 | 딥러닝의 확장성과 모델 해석력의 차이를 직접 확인했습니다. |
 
+---
 
+## 🗂️ 프로젝트 구조  
 
+SKN20-2nd-4TEAM
+│
+├── 01_preprocessing_report/
+│ └── Students'_EDA
+│
+├── 02_training_report/
+│ ├── project.ipynb
+│ └── ├── data/
+│ └── dataset.csv
+│
+├── 03_trained_model/
+│ └── best_model.pkl
+│
+├── images/
+│ ├── deep_learning.png
+│ ├── delete_column.png
+│ ├── heatmap_pre.png
+│ └── heatmap_later.png
+│
+├── app.py
+│
+├── pages/
+│ ├── input_form.py
+│ └── result.py
+│
+├── .gitignore
+└── README.md
