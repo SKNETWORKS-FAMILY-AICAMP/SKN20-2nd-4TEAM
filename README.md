@@ -9,7 +9,7 @@
 <table>
   <tr>
     <td align="center">
-      <img src="./img/squid.png width="100"><br>
+      <img src="./img/squid.png" width="100"><br>
       <b>김황현</b><br>
       팀장 / 데이터 엔지니어<br>
       <sub>전체 프로젝트 기획, 파이프라인 설계 및 모델링 전략 수립</sub>
