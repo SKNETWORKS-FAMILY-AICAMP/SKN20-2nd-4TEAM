@@ -15,7 +15,7 @@
       <sub>전체 프로젝트 기획, 파이프라인 설계 및 모델링 전략 수립</sub>
     </td>
     <td align="center">
-      <img src="./img/analyst.png" width="100"><br>
+      <img src="./img/patrick.jpeg" width="100"><br>
       <b>이도경</b><br>
       데이터 분석 담당<br>
       <sub>EDA, 전처리 및 변수 중요도 분석, 시각화 보고서 제작</sub>
