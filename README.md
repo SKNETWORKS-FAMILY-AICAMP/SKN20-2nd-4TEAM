@@ -21,7 +21,7 @@
       <sub>EDA, 전처리 및 변수 중요도 분석, 시각화 보고서 제작</sub>
     </td>
     <td align="center">
-      <img src="./img/snail.png" width="100"><br>
+      <img src="./img/final_snail.png" width="100"><br>
       <b>이지은</b><br>
       머신러닝 담당<br>
       <sub>모델 학습 및 튜닝, 성능 평가, 피처 엔지니어링</sub>
