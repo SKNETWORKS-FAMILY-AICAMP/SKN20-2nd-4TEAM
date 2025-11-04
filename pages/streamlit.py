@@ -13,6 +13,11 @@ from sklearn.pipeline import Pipeline as SkPipeline
 from sklearn.preprocessing import OneHotEncoder
 
 
+ROOT_DIR = Path(__file__).resolve().parent.parent
+MODEL_PATH = ROOT_DIR / 'model' / 'model_trained.pkl'
+DATASET_PATH = ROOT_DIR / 'data' / 'dataset.csv'
+
+
 def unwrap_estimator(estimator: Any) -> Any:
     """Follow best_estimator_ references until the fitted pipeline is reached."""
 
@@ -73,6 +78,40 @@ def clean_scalar(value: Any) -> Optional[Any]:
     if isinstance(value, float) and math.isnan(value):
         return None
     return value
+
+
+def compute_feature_modes(
+    dataset: pd.DataFrame,
+    feature_names: Sequence[str],
+) -> Dict[str, Any]:
+    modes: Dict[str, Any] = {}
+    for column in feature_names:
+        if column not in dataset.columns:
+            continue
+        series = dataset[column].dropna()
+        if series.empty:
+            continue
+        mode_values = series.mode(dropna=True)
+        if not mode_values.empty:
+            modes[column] = clean_scalar(mode_values.iloc[0])
+    return modes
+
+
+def compute_numeric_bounds(
+    dataset: pd.DataFrame,
+    numeric_columns: Sequence[str],
+) -> Dict[str, Tuple[Optional[float], Optional[float]]]:
+    bounds: Dict[str, Tuple[Optional[float], Optional[float]]] = {}
+    for column in numeric_columns:
+        if column not in dataset.columns:
+            continue
+        series = pd.to_numeric(dataset[column], errors='coerce').dropna()
+        if series.empty:
+            continue
+        lower = clean_scalar(series.min())
+        upper = clean_scalar(series.max())
+        bounds[column] = (lower, upper)
+    return bounds
 
 
 def sanitize_categories(values: Sequence[Any]) -> List[str]:
@@ -345,10 +384,9 @@ FIELD_LABELS: Dict[str, str] = {
 
 @st.cache_resource(show_spinner=False)
 def load_pipeline():
-    model_path = Path('../model/model_trained.pkl')
-    if not model_path.exists():
+    if not MODEL_PATH.exists():
         raise FileNotFoundError('학습된 모델 파일(model_trained.pkl)을 찾을 수 없습니다. 먼저 학습을 수행하세요.')
-    return joblib.load(model_path)
+    return joblib.load(MODEL_PATH)
 
 
 @st.cache_data(show_spinner=False)
@@ -379,19 +417,45 @@ def load_metadata():
     if remaining:
         numeric_cols = list(numeric_cols) + remaining
 
+    dataset_modes: Dict[str, Any] = {}
+    numeric_bounds: Dict[str, Tuple[Optional[float], Optional[float]]] = {}
+    if DATASET_PATH.exists():
+        try:
+            dataset_df = pd.read_csv(DATASET_PATH)
+            dataset_modes = compute_feature_modes(dataset_df, feature_names)
+            numeric_bounds = compute_numeric_bounds(dataset_df, numeric_cols)
+        except Exception:
+            dataset_modes = {}
+            numeric_bounds = {}
+
+    auto_fill_defaults: Dict[str, Any] = {
+        column: dataset_modes.get(column) for column in feature_names
+    }
+
     numeric_defaults: Dict[str, Dict[str, float | int]] = {}
     for col in numeric_cols:
-        value, step = sanitize_numeric_default(numeric_defaults_raw.get(col))
+        default_candidate = auto_fill_defaults.get(col)
+        if default_candidate is None:
+            default_candidate = numeric_defaults_raw.get(col)
+        value, step = sanitize_numeric_default(default_candidate)
         numeric_defaults[col] = {'value': value, 'step': step}
+        auto_fill_defaults[col] = value
 
     categorical_defaults: Dict[str, str] = {}
     categorical_options: Dict[str, List[str]] = {}
     for col in categorical_cols:
         options = categorical_options_raw.get(col, [])
         categorical_options[col] = options
-        categorical_defaults[col] = sanitize_categorical_default(
-            categorical_defaults_raw.get(col), options
-        )
+        default_candidate = auto_fill_defaults.get(col)
+        if default_candidate is None:
+            default_candidate = categorical_defaults_raw.get(col)
+        categorical_defaults[col] = sanitize_categorical_default(default_candidate, options)
+        auto_fill_defaults[col] = categorical_defaults[col]
+
+    for col in feature_names:
+        if auto_fill_defaults.get(col) is None:
+            fallback = dataset_modes.get(col)
+            auto_fill_defaults[col] = fallback if fallback is not None else ''
 
     return (
         feature_names,
@@ -400,6 +464,8 @@ def load_metadata():
         numeric_defaults,
         categorical_defaults,
         categorical_options,
+        auto_fill_defaults,
+        numeric_bounds,
     )
 
 
@@ -415,6 +481,8 @@ try:
         numeric_defaults,
         categorical_defaults,
         categorical_options,
+        auto_fill_defaults,
+        numeric_bounds,
     ) = load_metadata()
     pipeline = load_pipeline()
 except Exception as exc:
@@ -431,7 +499,8 @@ for col in numeric_cols:
 for col in categorical_cols:
     auto_fill_values[col] = categorical_defaults.get(col)
 for col in feature_cols:
-    auto_fill_values.setdefault(col, None)
+    if col not in auto_fill_values:
+        auto_fill_values[col] = auto_fill_defaults.get(col)
 
 codebook_options_map: Dict[str, List[Dict[str, object]]] = {}
 for column in CODEBOOK_LABELS:
@@ -489,12 +558,26 @@ with st.form('prediction_form'):
             default_config = numeric_defaults.get(column, {'value': 0.0, 'step': 0.1})
             default_value = default_config['value']
             step_value = default_config['step']
+            placeholder_text = None
+            min_max = numeric_bounds.get(column)
+            if min_max is not None:
+                lower, upper = min_max
+                if lower is not None and upper is not None:
+                    try:
+                        lower_int = int(float(lower))
+                        upper_int = int(float(upper))
+                        placeholder_text = f"{lower_int} ~ {upper_int}"
+                    except (TypeError, ValueError):
+                        placeholder_text = None
             with numeric_layout[idx % len(numeric_layout)]:
-                value = st.number_input(
-                    label=get_field_label(column),
-                    value=default_value,
-                    step=step_value,
-                )
+                number_kwargs: Dict[str, Any] = {
+                    'label': get_field_label(column),
+                    'value': default_value,
+                    'step': step_value,
+                }
+                if placeholder_text is not None:
+                    number_kwargs['placeholder'] = placeholder_text
+                value = st.number_input(**number_kwargs)
             input_data[column] = value
 
     if display_categorical_cols:
@@ -524,7 +607,12 @@ with st.form('prediction_form'):
     if other_columns:
         st.markdown('---')
         for column in other_columns:
-            input_data[column] = st.text_input(get_field_label(column), value='')
+            default_text = auto_fill_values.get(column)
+            if default_text is None:
+                default_text = ''
+            else:
+                default_text = str(default_text)
+            input_data[column] = st.text_input(get_field_label(column), value=default_text)
 
     for hidden_feature in HIDDEN_FEATURES:
         if hidden_feature in feature_cols and hidden_feature not in input_data:
