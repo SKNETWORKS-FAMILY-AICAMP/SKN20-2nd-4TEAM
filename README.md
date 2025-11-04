@@ -36,7 +36,7 @@
       <img src="./img/final_squirral.png" width="100"><br>
       <b>최유정</b><br>
       프론트엔드/UI<br>
-      <sub>Streamlit 화면 설계 및 전처리 및 변수 중요도 분석, github </sub>
+      <sub>EDA, 데이터 전처리, Streamlit 화면 설계, github</sub>
     </td>
   </tr>
 </table>
