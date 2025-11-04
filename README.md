@@ -74,7 +74,7 @@
 
 ### 3-1. 상관행렬 (Heatmap)
 <p align="center">
-  <img src="./images/heatmap_all_image.png" width="800">
+  <img src="https://raw.githubusercontent.com/SKNETWORKS-FAMILY-AICAMP/SKN20-2nd-4TEAM/main/images/heatmap_all_image.png" width="800">
 </p>
 
 > Spearman 상관계수를 기반으로 변수 간 관계를 분석했습니다.  
