@@ -121,16 +121,28 @@
 
 ## 🤖 머신러닝 및 딥러닝 모델링  
 
-| 모델 | Accuracy | F1 Score | AUC |
-|------|-----------|----------|-----|
-| Logistic Regression | 0.90 | 0.91 | 0.93 |
-| Random Forest | 0.91 | 0.93 | 0.94 |
-| XGBoost | 0.91 | 0.92 | 0.93 |
-| **LightGBM (최종)** | **0.93** | **0.934** | **0.942** |
-| PyTorch MLP | 0.91 | 0.92 | 0.94 |
+| 모델 | Accuracy | Precision | Recall | F1 |
+|------|-----------|------------|--------|----|
+| **Random Forest (최종)** | **0.9146** | **0.8975** | **0.9706** | **0.9326** |
+| XGBoost | 0.9118 | 0.9004 | 0.9615 | 0.9299 |
+| AdaBoost | 0.9049 | 0.8926 | 0.9593 | 0.9248 |
+| LightGBM | 0.9036 | 0.8924 | 0.9570 | 0.9236 |
+| Decision Tree | 0.9008 | 0.8854 | 0.9615 | 0.9219 |
+| Logistic Regression | 0.9008 | 0.9093 | 0.9299 | 0.9195 |
 
-> **LightGBM**이 F1과 AUC에서 가장 높은 성능을 기록하여 최종 모델로 선정되었습니다.  
-> 추가로 MLP 딥러닝 모델을 결합한 Soft Voting 앙상블 실험도 진행했습니다.  
+> **최종 모델: Random Forest**  
+> - **Accuracy:** 0.91  
+> - **Precision:** 0.92  
+> - **Recall:** 0.91  
+> - **F1-score:** 0.91  
+>
+> **클래스별 세부 성능:**  
+> - Graduate → Precision **0.95**, Recall **0.83**, F1 **0.88**  
+> - Dropout → Precision **0.90**, Recall **0.97**, F1 **0.93**  
+>
+> 모델은 **Dropout(이탈 학생)** 탐지에서 높은 재현율(Recall)을 기록했으며,  
+> 실제 이탈 학생의 약 **97%**를 정확히 분류했습니다.  
+> 따라서 **조기 위험 감지(Early Warning)** 목적에 가장 적합한 모델로 **RandomForest**를 선정했습니다.
 
 ---
 
@@ -185,32 +197,35 @@
 ---
 
 ## 🗂️ 프로젝트 구조  
+
+<pre>
 SKN20-2nd-4TEAM
 │
 ├── 01_preprocessing_report/
-│ └── Students'_EDA
+│   └── Students'_EDA
 │
 ├── 02_training_report/
-│ ├── project.ipynb
-│ └── data/
-│ └── dataset.csv
+│   ├── project.ipynb
+│   └── data/
+│       └── dataset.csv
 │
 ├── 03_trained_model/
-│ ├── model_trained.pkl
-│ └── feature_importance.png
+│   ├── model_trained.pkl
+│   └── feature_importance.png
 │
 ├── images/
-│ ├── heatmap_all_image.png
-│ ├── heatmap_later.png
-│ ├── streamlit_ui.png
-│ └── delete_column.png
+│   ├── heatmap_all_image.png
+│   ├── heatmap_later.png
+│   ├── streamlit_ui.png
+│   └── delete_column.png
 │
 ├── app.py
 │
 ├── pages/
-│ ├── input_form.py
-│ └── result.py
+│   ├── input_form.py
+│   └── result.py
 │
 ├── only_test_streamlit_guidance.txt
 ├── 2차 프로젝트 발표자료.pdf
 └── README.md
+</pre>
