@@ -6,6 +6,7 @@ from typing import Any, Dict, List, Optional, Sequence, Tuple
 import joblib
 import numpy as np
 import pandas as pd
+import plotly.graph_objects as go
 import streamlit as st
 from sklearn.compose import ColumnTransformer
 from sklearn.impute import SimpleImputer
@@ -623,9 +624,31 @@ st.markdown(
         border-radius: 999px;
         font-weight: 600;
         box-shadow: 0 12px 24px rgba(59, 130, 246, 0.25);
+        transition: all 0.3s ease;
     }
     .stButton > button:hover {
         filter: brightness(1.05);
+        transform: translateY(-2px);
+        box-shadow: 0 16px 32px rgba(59, 130, 246, 0.35);
+    }
+    .stExpander {
+        border-radius: 12px;
+        border: 1px solid rgba(148, 163, 184, 0.2);
+    }
+    .stSelectbox, .stNumberInput, .stTextInput {
+        border-radius: 8px;
+    }
+    /* 입력 폼 스타일 */
+    [data-testid="stForm"] {
+        background: rgba(255, 255, 255, 0.5);
+        padding: 1.5rem;
+        border-radius: 16px;
+        border: 1px solid rgba(148, 163, 184, 0.15);
+    }
+    /* 성공 메시지 스타일 */
+    .stSuccess {
+        border-radius: 12px;
+        padding: 1rem;
     }
     </style>
     """,
@@ -635,9 +658,11 @@ st.markdown(
 st.markdown(
     """
     <div class="hero-section">
-        <h1>학생 이탈(졸업 여부) 예측 대시보드</h1>
-        <p>학습된 머신러닝 파이프라인을 기반으로 학생 정보를 입력하면 Dropout 위험도를 예측하고
-        필요한 피처를 효율적으로 관리할 수 있습니다.</p>
+        <h1>🎓 학생 이탈 예측 시스템</h1>
+        <p>머신러닝 모델로 학생의 중도 이탈 위험을 미리 예측하고, 맞춤형 지원 방안을 마련하세요.</p>
+        <div style="margin-top: 1rem; font-size: 0.95rem; opacity: 0.85;">
+            ✨ 간편한 입력 → 🤖 모델 분석 → 📊 시각화된 결과
+        </div>
     </div>
     """,
     unsafe_allow_html=True,
@@ -705,24 +730,41 @@ display_numeric_cols = [col for col in display_numeric_cols if col not in codebo
 display_categorical_cols = [col for col in display_categorical_cols if col not in codebook_display_cols]
 
 with st.sidebar:
-    st.markdown('## Quick Guide')
+    st.markdown('## 📘 사용 가이드')
     st.markdown(
         """
         <div class="sidebar-tips">
-            <ul style="list-style-type:none; padding-left:0; margin:0;">
-                <li>✅ 기본값은 학습 데이터의 최빈값을 사용합니다.</li>
-                <li>🔢 숫자형 입력은 placeholder로 최소/최대 범위를 확인할 수 있습니다.</li>
-                <li>🧾 범주형은 코드북 라벨을 바탕으로 선택하거나 직접 입력할 수 있습니다.</li>
-                <li>🚀 설정 후 <strong>예측 실행</strong>을 눌러 결과와 확률을 확인하세요.</li>
+            <h4 style="color: #f9fafb; margin-bottom: 1rem; font-size: 1.1rem;">
+                💡 이렇게 사용하세요!
+            </h4>
+            <ul style="list-style-type:none; padding-left:0; margin:0; line-height: 2;">
+                <li style="margin-bottom: 0.8rem;">
+                    <strong style="color: #60a5fa;">1단계</strong><br/>
+                    아래 입력 폼에서 학생 정보를 입력하세요
+                </li>
+                <li style="margin-bottom: 0.8rem;">
+                    <strong style="color: #60a5fa;">2단계</strong><br/>
+                    기본값이 자동으로 채워져 있어요
+                </li>
+                <li style="margin-bottom: 0.8rem;">
+                    <strong style="color: #60a5fa;">3단계</strong><br/>
+                    필요한 항목만 수정하세요
+                </li>
+                <li>
+                    <strong style="color: #60a5fa;">4단계</strong><br/>
+                    예측 실행 버튼을 클릭! 🚀
+                </li>
             </ul>
         </div>
         """,
         unsafe_allow_html=True,
     )
-    st.caption('입력 필드는 학습 파이프라인 스키마와 동기화되어 있습니다.')
+    st.markdown("")
+    st.info("💡 **팁**: 모든 항목을 입력하지 않아도 예측이 가능합니다!")
 
 if dataset_summary:
-    st.markdown('### 데이터 한눈에 보기')
+    st.markdown('### 📊 학습 데이터 통계')
+    st.caption('모델이 학습한 데이터의 주요 통계입니다')
     metric_cols = st.columns(4)
     total_records = int(dataset_summary.get('row_count', 0))
     feature_count = int(dataset_summary.get('feature_count', 0))
@@ -731,34 +773,43 @@ if dataset_summary:
     dropout_ratio = dataset_summary.get('dropout_ratio')
     graduate_ratio = dataset_summary.get('graduate_ratio')
 
-    render_metric_card(metric_cols[0], '데이터 샘플 수', f"{total_records:,}")
-    render_metric_card(metric_cols[1], '사용 피처 수', str(feature_count))
+    render_metric_card(metric_cols[0], '📚 학습 데이터', f"{total_records:,}명")
+    render_metric_card(metric_cols[1], '🔍 분석 항목', f"{feature_count}개")
     dropout_display = f"{dropout_ratio * 100:.1f}%" if dropout_ratio is not None else '--'
-    render_metric_card(metric_cols[2], 'Dropout 비율', dropout_display)
+    render_metric_card(metric_cols[2], '⚠️ 중퇴율', dropout_display)
     if graduate_ratio is not None:
-        render_metric_card(metric_cols[3], 'Graduate 비율', f"{graduate_ratio * 100:.1f}%")
+        render_metric_card(metric_cols[3], '🎓 졸업률', f"{graduate_ratio * 100:.1f}%")
     elif total_target_count > 0 and target_counts:
         top_label = max(target_counts, key=target_counts.get)
         top_share = target_counts[top_label] / total_target_count
-        render_metric_card(metric_cols[3], f'최다 클래스 ({top_label})', f"{top_share * 100:.1f}%")
+        render_metric_card(metric_cols[3], f'📈 최다 ({top_label})', f"{top_share * 100:.1f}%")
     else:
-        render_metric_card(metric_cols[3], 'Graduate 비율', '--')
-    st.markdown('')
+        render_metric_card(metric_cols[3], '🎓 졸업률', '--')
+    st.markdown('---')
 else:
-    st.warning('dataset.csv 파일을 찾을 수 없습니다. 데이터 통계를 표시하려면 파일을 준비하세요.')
+    st.warning('⚠️ dataset.csv 파일을 찾을 수 없습니다.')
 
-tab_predict, tab_feature, tab_insight = st.tabs(['예측 실행', '피처 가이드', '데이터 인사이트'])
+tab_predict, tab_feature, tab_insight = st.tabs(['🎯 예측하기', '📖 입력 항목 안내', '📊 데이터 분석'])
 
 with tab_predict:
-    st.markdown('#### 예측 입력')
-    st.caption('최빈값으로 채워진 기본 입력을 검토하고 필요한 항목만 수정한 뒤 예측을 실행하세요.')
+    st.markdown('### 🎯 학생 정보 입력')
+    
+    # 안내 메시지
+    st.info(
+        """
+        💡 **입력 방법**
+        - 기본값은 자동으로 설정되어 있습니다
+        - 변경하고 싶은 항목만 수정하세요
+        - 모든 항목을 입력하지 않아도 예측이 가능합니다
+        """
+    )
 
     with st.form('prediction_form'):
         input_data: Dict[str, Any] = {}
 
         if codebook_display_cols:
-            st.markdown('##### 코드북 기반 주요 항목')
-            st.caption('공식 코드 라벨을 참고하여 빠르게 선택할 수 있습니다.')
+            st.markdown('#### 📝 기본 정보')
+            st.caption('학생의 기본 정보를 선택해주세요')
             codebook_layout = st.columns(max(1, min(len(codebook_display_cols), 3)))
             for idx, column in enumerate(codebook_display_cols):
                 options = codebook_options_map.get(column, [])
@@ -782,7 +833,8 @@ with tab_predict:
 
         if display_numeric_cols:
             st.markdown('---')
-            st.markdown('##### 숫자형 피처')
+            st.markdown('#### 📊 학업 성적 정보')
+            st.caption('학생의 성적 및 학업 관련 정보를 입력하세요')
             numeric_layout = st.columns(max(1, min(len(display_numeric_cols), 3)))
             for idx, column in enumerate(display_numeric_cols):
                 default_config = numeric_defaults.get(column, {'value': 0.0, 'step': 0.1})
@@ -812,7 +864,8 @@ with tab_predict:
 
         if display_categorical_cols:
             st.markdown('---')
-            st.markdown('##### 범주형 피처')
+            st.markdown('#### 📂 추가 정보')
+            st.caption('기타 카테고리 정보를 선택하세요')
             categorical_layout = st.columns(max(1, min(len(display_categorical_cols), 2)))
             for idx, column in enumerate(display_categorical_cols):
                 options = categorical_options.get(column, [])
@@ -850,7 +903,8 @@ with tab_predict:
             if hidden_feature in feature_cols and hidden_feature not in input_data:
                 input_data[hidden_feature] = auto_fill_values.get(hidden_feature)
 
-        submitted = st.form_submit_button('예측 실행', use_container_width=True)
+        st.markdown('---')
+        submitted = st.form_submit_button('🚀 예측 시작하기', use_container_width=True, type='primary')
 
     if submitted:
         try:
@@ -868,49 +922,247 @@ with tab_predict:
                 dropout_prob = float(probabilities[0])
                 graduate_prob = float(probabilities[1])
 
-            st.success('예측이 완료되었습니다.')
+            st.success('✨ 예측이 완료되었습니다!')
+            
+            # 예측 결과 결정
             badge_text = 'Dropout' if prediction == 0 else 'Graduate'
+            badge_color = '#ef4444' if prediction == 0 else '#10b981'
+            badge_icon = '⚠️' if prediction == 0 else '🎓'
             description_text = (
                 '학생의 중도 이탈 가능성이 더 높게 예측되었습니다.'
                 if prediction == 0
                 else '학생이 졸업할 가능성이 더 높게 예측되었습니다.'
             )
-            prob_section = ''
-            if dropout_prob is not None and graduate_prob is not None:
-                prob_section = (
-                    '<div class="prob-grid">'
-                    '<div class="prob-box">'
-                    '<div class="prob-label">Dropout 확률</div>'
-                    f'<div class="prob-value">{dropout_prob * 100:.2f}%</div>'
-                    '</div>'
-                    '<div class="prob-box">'
-                    '<div class="prob-label">Graduate 확률</div>'
-                    f'<div class="prob-value">{graduate_prob * 100:.2f}%</div>'
-                    '</div>'
-                    '</div>'
-                )
-
+            
+            # 예측 결과 헤더
             st.markdown(
                 f"""
-                <div class="result-card">
-                    <h3>예측 리포트</h3>
-                    <span class="result-badge">{badge_text}</span>
-                    <p style="margin:0; color:#475569;">{description_text}</p>
-                    {prob_section}
+                <div style="background: linear-gradient(135deg, {badge_color}15, {badge_color}25); 
+                            padding: 2rem; border-radius: 20px; text-align: center; 
+                            border: 2px solid {badge_color}50; margin-bottom: 2rem;
+                            box-shadow: 0 8px 24px rgba(0,0,0,0.12);">
+                    <div style="font-size: 4rem; margin-bottom: 1rem;">{badge_icon}</div>
+                    <h2 style="margin: 0; color: #1f2937; font-size: 2rem;">🎯 예측 결과</h2>
+                    <div style="margin: 1.5rem 0;">
+                        <span style="background: {badge_color}; color: white; 
+                                     padding: 0.8rem 2.5rem; border-radius: 50px; 
+                                     font-size: 1.8rem; font-weight: bold; 
+                                     box-shadow: 0 4px 12px {badge_color}40;">
+                            {badge_text}
+                        </span>
+                    </div>
+                    <p style="margin: 1rem 0 0 0; color: #475569; font-size: 1.15rem; font-weight: 500;">
+                        {description_text}
+                    </p>
                 </div>
                 """,
                 unsafe_allow_html=True,
             )
+            
+            # 확률 시각화
+            if dropout_prob is not None and graduate_prob is not None:
+                st.markdown("### 📊 예측 확률 분석")
+                
+                col1, col2 = st.columns(2)
+                
+                with col1:
+                    # 도넛 차트
+                    fig_pie = go.Figure(data=[go.Pie(
+                        labels=['Dropout', 'Graduate'],
+                        values=[dropout_prob * 100, graduate_prob * 100],
+                        hole=.6,
+                        marker=dict(
+                            colors=['#ef4444', '#10b981'],
+                            line=dict(color='#ffffff', width=4)
+                        ),
+                        textinfo='label+percent',
+                        textfont=dict(size=16, color='#ffffff', family='Arial Black'),
+                        hovertemplate='<b>%{label}</b><br>확률: %{value:.2f}%<extra></extra>',
+                        pull=[0.05 if prediction == 0 else 0, 0.05 if prediction == 1 else 0]
+                    )])
+                    
+                    # 중앙 텍스트
+                    max_prob = max(dropout_prob, graduate_prob)
+                    center_color = "#ef4444" if dropout_prob > graduate_prob else "#10b981"
+                    
+                    fig_pie.add_annotation(
+                        text=f'<b>{max_prob * 100:.1f}%</b>',
+                        x=0.5, y=0.5,
+                        font=dict(size=36, color=center_color, family='Arial Black'),
+                        showarrow=False
+                    )
+                    
+                    fig_pie.update_layout(
+                        title=dict(
+                            text='<b>🍩 확률 분포</b>',
+                            font=dict(size=20, color='#1f2937'),
+                            x=0.5,
+                            xanchor='center'
+                        ),
+                        showlegend=True,
+                        legend=dict(
+                            orientation="h",
+                            yanchor="bottom",
+                            y=-0.2,
+                            xanchor="center",
+                            x=0.5,
+                            font=dict(size=14, color='#1f2937', family='Arial')
+                        ),
+                        paper_bgcolor="rgba(0,0,0,0)",
+                        height=400,
+                        margin=dict(l=20, r=20, t=80, b=20)
+                    )
+                    
+                    st.plotly_chart(fig_pie, use_container_width=True)
+                
+                with col2:
+                    # 게이지 차트
+                    prediction_label = "Dropout" if dropout_prob > graduate_prob else "Graduate"
+                    main_prob = max(dropout_prob, graduate_prob)
+                    gauge_color = "#ef4444" if dropout_prob > graduate_prob else "#10b981"
+                    
+                    fig_gauge = go.Figure(go.Indicator(
+                        mode="gauge+number",
+                        value=main_prob * 100,
+                        domain={'x': [0, 1], 'y': [0, 1]},
+                        title={'text': f"<b>{prediction_label} 확률</b>", 
+                               'font': {'size': 20, 'color': '#1f2937', 'family': 'Arial Black'}},
+                        number={'suffix': '%', 'font': {'size': 48, 'color': gauge_color, 'family': 'Arial Black'}},
+                        gauge={
+                            'axis': {'range': [None, 100], 'tickwidth': 2, 'tickcolor': gauge_color},
+                            'bar': {'color': gauge_color, 'thickness': 0.8},
+                            'bgcolor': "white",
+                            'borderwidth': 3,
+                            'bordercolor': "#e2e8f0",
+                            'steps': [
+                                {'range': [0, 33], 'color': '#fee2e2'},
+                                {'range': [33, 66], 'color': '#fef3c7'},
+                                {'range': [66, 100], 'color': '#d1fae5'}
+                            ],
+                            'threshold': {
+                                'line': {'color': gauge_color, 'width': 6},
+                                'thickness': 0.85,
+                                'value': main_prob * 100
+                            }
+                        }
+                    ))
+                    
+                    fig_gauge.update_layout(
+                        paper_bgcolor="rgba(0,0,0,0)",
+                        font={'color': "#1f2937", 'family': "Arial"},
+                        height=400,
+                        margin=dict(l=20, r=20, t=80, b=20)
+                    )
+                    
+                    st.plotly_chart(fig_gauge, use_container_width=True)
+                
+                # 상세 확률 카드
+                st.markdown("---")
+                detail_col1, detail_col2 = st.columns(2)
+                
+                with detail_col1:
+                    st.markdown(
+                        f"""
+                        <div style="background: linear-gradient(135deg, #fee2e2, #fecaca); 
+                                    padding: 2rem; border-radius: 16px; 
+                                    border-left: 6px solid #ef4444;
+                                    box-shadow: 0 4px 16px rgba(239, 68, 68, 0.2);
+                                    transition: transform 0.2s;">
+                            <div style="display: flex; align-items: center; margin-bottom: 1rem;">
+                                <span style="font-size: 2.5rem; margin-right: 1rem;">⚠️</span>
+                                <h3 style="margin: 0; color: #991b1b; font-size: 1.5rem;">Dropout</h3>
+                            </div>
+                            <p style="font-size: 3rem; font-weight: bold; margin: 1rem 0; 
+                                      color: #7f1d1d; text-align: center;">
+                                {dropout_prob * 100:.2f}%
+                            </p>
+                            <p style="margin: 0; color: #991b1b; font-size: 1rem; text-align: center;">
+                                중도 이탈 가능성
+                            </p>
+                        </div>
+                        """,
+                        unsafe_allow_html=True
+                    )
+                
+                with detail_col2:
+                    st.markdown(
+                        f"""
+                        <div style="background: linear-gradient(135deg, #d1fae5, #a7f3d0); 
+                                    padding: 2rem; border-radius: 16px; 
+                                    border-left: 6px solid #10b981;
+                                    box-shadow: 0 4px 16px rgba(16, 185, 129, 0.2);
+                                    transition: transform 0.2s;">
+                            <div style="display: flex; align-items: center; margin-bottom: 1rem;">
+                                <span style="font-size: 2.5rem; margin-right: 1rem;">🎓</span>
+                                <h3 style="margin: 0; color: #065f46; font-size: 1.5rem;">Graduate</h3>
+                            </div>
+                            <p style="font-size: 3rem; font-weight: bold; margin: 1rem 0; 
+                                      color: #064e3b; text-align: center;">
+                                {graduate_prob * 100:.2f}%
+                            </p>
+                            <p style="margin: 0; color: #065f46; font-size: 1rem; text-align: center;">
+                                졸업 가능성
+                            </p>
+                        </div>
+                        """,
+                        unsafe_allow_html=True
+                    )
 
-            with st.expander('입력 값 상세 보기', expanded=False):
+            # 인사이트 및 조언
+            st.markdown("---")
+            st.markdown("### 💬 모델의 조언")
+            
+            if dropout_prob > 0.7:
+                st.error(
+                    """
+                    **⚠️ 높은 중도 이탈 위험**
+                    - 학생 상담 및 멘토링 프로그램 참여를 권장합니다
+                    - 학업 지원 프로그램을 적극 활용하세요
+                    - 정기적인 학습 진도 체크가 필요합니다
+                    """
+                )
+            elif dropout_prob > 0.4:
+                st.warning(
+                    """
+                    **⚡ 주의가 필요한 상태**
+                    - 학습 패턴을 점검해보세요
+                    - 교수님 또는 학업 상담사와 면담을 고려하세요
+                    - 동료 학습 그룹 참여를 추천합니다
+                    """
+                )
+            else:
+                st.success(
+                    """
+                    **✅ 안정적인 학업 상태**
+                    - 현재의 좋은 패턴을 유지하세요
+                    - 지속적인 자기 관리가 중요합니다
+                    - 학업 목표를 향해 꾸준히 나아가세요
+                    """
+                )
+
+            with st.expander('📋 입력한 데이터 확인하기', expanded=False):
                 st.json(json.dumps(input_data, ensure_ascii=False, indent=2))
         except Exception as exc:
-            st.error(f'예측 중 오류가 발생했습니다: {exc}')
+            st.error(f'❌ 예측 중 오류가 발생했습니다: {exc}')
     else:
-        st.info('예측을 확인하려면 정보를 입력한 뒤 예측 실행 버튼을 눌러 주세요.')
+        st.markdown(
+            """
+            <div style="background: linear-gradient(135deg, #dbeafe, #bfdbfe); 
+                        padding: 2rem; border-radius: 16px; text-align: center;
+                        border: 2px solid #3b82f6;">
+                <h3 style="color: #1e40af; margin-bottom: 1rem;">� 시작해볼까요?</h3>
+                <p style="color: #1e40af; font-size: 1.1rem; margin: 0;">
+                    위에서 학생 정보를 입력하고<br/>
+                    <strong>"🚀 예측 시작하기"</strong> 버튼을 눌러주세요!
+                </p>
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
 
 with tab_feature:
-    st.markdown('#### 피처 요약')
+    st.markdown('### 📖 입력 항목 가이드')
+    st.caption('각 입력 항목에 대한 설명입니다')
     if not feature_overview_df.empty:
         st.dataframe(
             feature_overview_df.sort_values(by='피처'),
@@ -920,33 +1172,43 @@ with tab_feature:
     else:
         st.info('피처 정보를 불러오지 못했습니다.')
 
+    st.markdown("---")
+    
     if codebook_display_cols:
-        with st.expander('코드북 라벨 매핑', expanded=False):
+        st.markdown("#### 🏷️ 선택 항목별 코드 설명")
+        with st.expander('📚 코드북 상세 보기', expanded=False):
             for column in codebook_display_cols:
                 options = codebook_options_map.get(column, [])
                 if not options:
                     continue
-                st.markdown(f"**{get_field_label(column)} ({column})**")
+                st.markdown(f"##### {get_field_label(column)}")
                 st.dataframe(pd.DataFrame(options), use_container_width=True, hide_index=True)
+                st.markdown("")
 
     visible_categorical = [
         col for col in categorical_cols if col not in HIDDEN_FEATURES and col not in codebook_display_cols
     ]
     if visible_categorical:
-        with st.expander('범주형 피처 선택지', expanded=False):
+        st.markdown("#### 📂 카테고리 항목 선택지")
+        with st.expander('🔍 가능한 값 확인하기', expanded=False):
             for column in visible_categorical:
                 options = categorical_options.get(column, [])
                 if not options:
                     continue
-                st.markdown(f"**{get_field_label(column)} ({column})**")
-                st.write(', '.join(str(opt) for opt in options))
+                st.markdown(f"##### {get_field_label(column)}")
+                st.info(', '.join(str(opt) for opt in options))
 
     hidden_columns = sorted(set(feature_cols).intersection(HIDDEN_FEATURES))
     if hidden_columns:
-        st.caption('화면에서 숨김 처리된 피처: ' + ', '.join(hidden_columns))
+        st.markdown("---")
+        with st.expander('🔒 자동 처리되는 숨김 항목', expanded=False):
+            st.caption('다음 항목들은 자동으로 처리되어 입력하지 않아도 됩니다:')
+            st.write(', '.join(hidden_columns))
 
 with tab_insight:
-    st.markdown('#### 데이터 인사이트')
+    st.markdown('### 📊 데이터 분석 인사이트')
+    st.caption('모델이 학습한 데이터의 패턴과 통계를 확인하세요')
+    
     if dataset_summary:
         target_counts = dataset_summary.get('target_counts', {}) or {}
         if target_counts:
@@ -987,10 +1249,22 @@ with tab_insight:
             )
 
         if numeric_range_rows:
-            with st.expander('숫자형 피처 범위', expanded=False):
+            st.markdown("---")
+            st.markdown("#### 📏 숫자형 데이터 범위")
+            with st.expander('📊 상세 범위 확인하기', expanded=False):
                 range_df = pd.DataFrame(numeric_range_rows).sort_values(by='피처')
-                st.dataframe(range_df, use_container_width=True, hide_index=True)
+                st.dataframe(
+                    range_df, 
+                    use_container_width=True, 
+                    hide_index=True,
+                    column_config={
+                        '피처': st.column_config.TextColumn('항목', width='large'),
+                        '최소값': st.column_config.NumberColumn('최소값', format='%.2f'),
+                        '최대값': st.column_config.NumberColumn('최대값', format='%.2f'),
+                    }
+                )
 
-        st.caption('범위와 통계는 dataset.csv 기준입니다.')
+        st.markdown("---")
+        st.info('📌 **참고**: 모든 통계와 범위는 실제 학습에 사용된 dataset.csv 데이터를 기준으로 합니다.')
     else:
-        st.warning('dataset.csv 파일을 찾을 수 없습니다. 데이터 인사이트를 표시하려면 파일을 준비하세요.')
+        st.warning('⚠️ dataset.csv 파일을 찾을 수 없습니다. 데이터 분석을 위해서는 데이터 파일이 필요합니다.')
