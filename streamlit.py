@@ -14,7 +14,7 @@ from sklearn.pipeline import Pipeline as SkPipeline
 from sklearn.preprocessing import OneHotEncoder
 
 
-ROOT_DIR = Path(__file__).resolve().parent.parent
+ROOT_DIR = Path(__file__).resolve().parent
 MODEL_PATH = ROOT_DIR / 'model' / 'model_trained.pkl'
 DATASET_PATH = ROOT_DIR / 'data' / 'raw' / 'dataset.csv'
 
