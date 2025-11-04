@@ -44,7 +44,24 @@
 🔗 **GitHub Repository**: [SKNETWORKS-FAMILY-AICAMP / SKN20-2nd-4TEAM](https://github.com/SKNETWORKS-FAMILY-AICAMP/SKN20-2nd-4TEAM)
 
 ---
+## 📖 WBS (Work Breakdown Structure)
 
+| 작업 명 | 담당자 | 산출물 |
+|----------|---------|---------|
+| 프로젝트 주제 및 데이터 선정 | 김황현, 이도경, 이지은, 정소영, 최유정 | 없음 |
+| 데이터 수집 및 전처리 | 이도경, 최유정 | CSV 병합, 결측치 처리, 이상치 점검 코드 |
+| EDA 수행 및 시각화 | 이도경 | 상관행렬 Heatmap, 변수 분포 그래프, EDA 마크다운 보고서 |
+| 피처 엔지니어링 및 변수 선택 | 김황현, 이지은 | Feature Importance, 변수 선택 코드 |
+| 머신러닝 모델링 (Logistic, RandomForest, LightGBM) | 김황현, 이지은 | 학습 코드, 성능 비교 리포트 |
+| 딥러닝 모델링 (MLP) | 정소영 | PyTorch MLP 코드, 학습 결과 로그 |
+| 모델 성능 평가 및 비교 | 김황현, 이지은, 정소영 | F1, AUC 지표, Confusion Matrix |
+| Streamlit 웹 구현 | 최유정 | Streamlit UI 코드, `app.py`, 페이지별 구성 |
+| Streamlit 기능 통합 및 테스트 | 김황현, 최유정 | 실시간 예측 테스트, 결과 시각화 |
+| README.md 작성 및 프로젝트 구조 정리 | 최유정 | GitHub README.md, 폴더 구조 정리 |
+| 발표자료 제작 (PPT / PDF) | 김황현, 정소영 | 2차 프로젝트 발표자료.pdf |
+| 최종 점검 및 회고 작성 | 전원 | 회고 섹션, 기술 블로그 초안 |
+
+---
 ## 🧩 프로젝트 개요  
 
 학생 개개인의 학적, 학업 성취, 재정 상태, 가정 요인 등을 종합 분석하여  
