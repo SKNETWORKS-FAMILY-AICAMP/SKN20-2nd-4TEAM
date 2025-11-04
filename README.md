@@ -10,7 +10,7 @@
     <td valign="top" align="center" width="200">
       <img src="./img/final_squid.png" width="110"><br>
       <b>김황현</b><br>
-      팀장 / 데이터 엔지니어<br>
+      데이터 엔지니어<br>
       <sub>전체 프로젝트 기획<br>파이프라인 설계 및 모델링 전략 수립</sub>
     </td>
     <td valign="top" align="center" width="200">
