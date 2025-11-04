@@ -9,38 +9,39 @@
 
 <table>
   <tr>
-    <td align="center">
+    <td valign="top" align="center" width="180">
       <img src="./img/final_squid.png" width="100"><br>
       <b>김황현</b><br>
       팀장 / 데이터 엔지니어<br>
-      <sub>전체 프로젝트 기획, 파이프라인 설계 및 모델링 전략 수립</sub>
+      <sub>전체 프로젝트 기획<br>파이프라인 설계 및 모델링 전략 수립</sub>
     </td>
-    <td align="center">
+    <td valign="top" align="center" width="180">
       <img src="./img/final_ddoong.png" width="100"><br>
       <b>이도경</b><br>
       머신러닝 담당<br>
-      <sub>EDA, 전처리 및 변수 중요도 분석, 피처 엔지니어링</sub>
+      <sub>EDA, 전처리 및 변수 중요도 분석<br>피처 엔지니어링</sub>
     </td>
-    <td align="center">
+    <td valign="top" align="center" width="180">
       <img src="./img/final_snail.png" width="100"><br>
       <b>이지은</b><br>
       데이터 분석 담당<br>
-      <sub>모델 학습 및 튜닝, 성능 평가, 시각화 보고서 제작</sub>
+      <sub>모델 학습 및 튜닝<br>성능 평가, 시각화 보고서 제작</sub>
     </td>
-    <td align="center">
+    <td valign="top" align="center" width="180">
       <img src="./img/haepari.png" width="100"><br>
       <b>정소영</b><br>
       머신러닝 담당<br>
-      <sub>데이터 전처리, 모델링 전략 수립</sub>
+      <sub>데이터 전처리<br>모델링 전략 수립</sub>
     </td>
-    <td align="center">
+    <td valign="top" align="center" width="180">
       <img src="./img/final_squirral.png" width="100"><br>
       <b>최유정</b><br>
-      데이터 엔지니어/UI<br>
-      <sub>EDA, 데이터 전처리, Streamlit 화면 설계, GitHub 관리</sub>
+      데이터 엔지니어 / UI<br>
+      <sub>EDA, 데이터 전처리<br>Streamlit 화면 설계, GitHub 관리</sub>
     </td>
   </tr>
 </table>
+
 
 🔗 **GitHub Repository**: [SKNETWORKS-FAMILY-AICAMP / SKN20-2nd-4TEAM](https://github.com/SKNETWORKS-FAMILY-AICAMP/SKN20-2nd-4TEAM)
 
