@@ -9,31 +9,31 @@
 <table>
   <tr>
     <td align="center">
-      <img src="./img/leader.png" width="100"><br>
+      <img src="./img/squid.png" width="100"><br>
       <b>김황현</b><br>
       팀장 / 데이터 엔지니어<br>
       <sub>전체 프로젝트 기획, 파이프라인 설계 및 모델링 전략 수립</sub>
     </td>
     <td align="center">
-      <img src="./img/patrick.jpeg" width="100"><br>
+      <img src="./img/patric.png" width="100"><br>
       <b>이도경</b><br>
       데이터 분석 담당<br>
       <sub>EDA, 전처리 및 변수 중요도 분석, 시각화 보고서 제작</sub>
     </td>
     <td align="center">
-      <img src="./img/model.png" width="100"><br>
+      <img src="./img/snail.png" width="100"><br>
       <b>이지은</b><br>
       머신러닝 담당<br>
       <sub>모델 학습 및 튜닝, 성능 평가, 피처 엔지니어링</sub>
     </td>
     <td align="center">
-      <img src="./img/deep.png" width="100"><br>
+      <img src="./img/haepari.png" width="100"><br>
       <b>정소영</b><br>
       딥러닝 담당<br>
       <sub>신경망 설계, 딥러닝 모델 구현 및 성능 비교</sub>
     </td>
     <td align="center">
-      <img src="./img/squirrel-removebg-preview (1).png" width="100"><br>
+      <img src="./img/mee.png" width="100"><br>
       <b>최유정</b><br>
       프론트엔드/UI<br>
       <sub>Streamlit 화면 설계 및 발표 자료 제작, README 정리</sub>
@@ -85,27 +85,15 @@
 
 ## 🤖 머신러닝 모델링  
 
-| 모델 | Accuracy | F1 Score | AUC |
-|------|-----------|-----------|-----|
-| Logistic Regression | 0.875 | 0.881 | 0.902 |
-| Random Forest | 0.902 | 0.911 | 0.924 |
-| XGBoost | 0.915 | 0.927 | 0.938 |
-| **LightGBM (Best)** | **0.921** | **0.934** | **0.942** |
+| 모델 | Accuracy | F1 Score |
+|------|-----------|-----------|
+| Logistic Regression | 0.90 | 0.91 |
+| **Random Forest (Best)** | **0.91** | **0.93** |
+| XGBoost | 0.91 | 0.92 |
+| LightGBM | 0.90 | 0.92 |
 
-> LightGBM이 가장 높은 F1 Score를 기록하여 최종 모델로 선정됨.  
+> Random Forest이 가장 높은 F1 Score를 기록하여 최종 모델로 선정됨.  
 > class_weight="balanced" 옵션으로 불균형 문제 완화.  
-
----
-
-## 🧠 딥러닝 모델 결과  
-
-| 지표 | Epoch 1 | Epoch 50 | 변화량 |
-|------|----------|----------|--------|
-| Train Loss | 0.62 | 0.28 | ▼ 54.8% |
-| Validation Accuracy | 77.3% | 86.9% | ▲ 9.6% |
-| F1 Score | 0.79 | 0.88 | ▲ 11.4% |
-
-> PyTorch 기반 MLP 모델 사용, EarlyStopping과 Dropout 적용으로 과적합 방지.  
 
 ---
 
@@ -137,13 +125,13 @@
 | 김황현 | 머신러닝 파이프라인의 중요성을 직접 설계하며 실무 감각을 익혔습니다. |
 | 이도경 | 데이터 정제와 시각화를 통해 피처 간 관계를 깊이 이해했습니다. |
 | 이지은 | 다양한 모델과 파라미터 튜닝을 통해 성능 향상을 체험했습니다. |
-| 정소영 | 프로젝트를 문서화하며 결과물을 정리하는 과정에서 큰 보람을 느꼈습니다. |
+| 정소영 | 데이터 전처리부터 머신러닝·딥러닝 모델 실험까지 진행하며, 직접 F1 스코어가 나왔을 때의 뿌듯함이 아직도 기억납니다. 피처 값에 따라서 머신러닝의 성능이 달라질 수 있다는 사실도 알게 되어 흥미로웠습니다. 또한 주제를 조금 더 빨리 정했다면 더 깊게 탐구할 수 있지 않았을까 하는 아쉬움도 있지만, 멋진 팀원분들 덕분에 훌륭한 결과물을 낼 수 있었다고 생각합니다. 다들 정말 고생 많으셨습니다! |
 | 최유정 | 딥러닝의 확장성과 모델 해석력의 차이를 직접 확인했습니다. |
 
 ---
 
 ## 🗂️ 프로젝트 구조  
-
+```
 SKN20-2nd-4TEAM
 │
 ├── 01_preprocessing_report/
@@ -171,3 +159,4 @@ SKN20-2nd-4TEAM
 │
 ├── .gitignore
 └── README.md
+```
