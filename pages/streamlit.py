@@ -16,7 +16,7 @@ from sklearn.preprocessing import OneHotEncoder
 
 ROOT_DIR = Path(__file__).resolve().parent.parent
 MODEL_PATH = ROOT_DIR / 'model' / 'model_trained.pkl'
-DATASET_PATH = ROOT_DIR / 'data' / 'dataset.csv'
+DATASET_PATH = ROOT_DIR / 'data' / 'preprocessed' / 'dataset_preprocessed.csv'
 
 
 def unwrap_estimator(estimator: Any) -> Any:
@@ -631,6 +631,39 @@ st.markdown(
         transform: translateY(-2px);
         box-shadow: 0 16px 32px rgba(59, 130, 246, 0.35);
     }
+    /* 폼 내부 버튼 스타일 강화 */
+    div[data-testid="stForm"] button[kind="primary"],
+    #tabs-bui2-tabpanel-0 .st-key-FormSubmitter-prediction_form----------- button,
+    .st-key-FormSubmitter-prediction_form----------- button {
+        background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%) !important;
+        border: none !important;
+        color: white !important;
+        font-size: 1.4rem !important;
+        font-weight: 800 !important;
+        padding: 1.2rem 2.5rem !important;
+        border-radius: 16px !important;
+        box-shadow: 0 10px 25px rgba(245, 158, 11, 0.5) !important;
+        transition: all 0.3s ease !important;
+        height: auto !important;
+        min-height: 4rem !important;
+        letter-spacing: 0.5px !important;
+    }
+    div[data-testid="stForm"] button[kind="primary"]:hover:not(:disabled),
+    #tabs-bui2-tabpanel-0 .st-key-FormSubmitter-prediction_form----------- button:hover:not(:disabled),
+    .st-key-FormSubmitter-prediction_form----------- button:hover:not(:disabled) {
+        background: linear-gradient(135deg, #d97706 0%, #b45309 100%) !important;
+        transform: translateY(-3px) scale(1.02) !important;
+        box-shadow: 0 15px 35px rgba(245, 158, 11, 0.6) !important;
+    }
+    div[data-testid="stForm"] button[kind="primary"]:disabled,
+    #tabs-bui2-tabpanel-0 .st-key-FormSubmitter-prediction_form----------- button:disabled,
+    .st-key-FormSubmitter-prediction_form----------- button:disabled {
+        background: linear-gradient(135deg, #9ca3af 0%, #6b7280 100%) !important;
+        box-shadow: 0 4px 12px rgba(107, 114, 128, 0.3) !important;
+        cursor: not-allowed !important;
+        opacity: 0.6 !important;
+        transform: none !important;
+    }
     .stExpander {
         border-radius: 12px;
         border: 1px solid rgba(148, 163, 184, 0.2);
@@ -789,19 +822,40 @@ if dataset_summary:
 else:
     st.warning('⚠️ dataset.csv 파일을 찾을 수 없습니다.')
 
-tab_predict, tab_feature, tab_insight = st.tabs(['🎯 예측하기', '📖 입력 항목 안내', '📊 데이터 분석'])
+tab_predict, tab_insight = st.tabs(['🎯 예측하기', '📊 데이터 분석'])
 
 with tab_predict:
-    st.markdown('### 🎯 학생 정보 입력')
+    st.markdown(
+        """
+        <div style="background: linear-gradient(135deg, #4ade80 0%, #22c55e 100%); 
+                    padding: 2rem; border-radius: 20px; margin-bottom: 2rem;
+                    box-shadow: 0 10px 30px rgba(34, 197, 94, 0.3);">
+            <h2 style="color: white; margin: 0; font-size: 2rem;">🎯 학생 정보 입력</h2>
+            <p style="color: rgba(255,255,255,0.9); margin-top: 0.5rem; font-size: 1.1rem;">
+                필요한 정보를 입력하고 예측 버튼을 클릭하세요
+            </p>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
     
     # 안내 메시지
-    st.info(
+    st.markdown(
         """
-        💡 **입력 방법**
-        - 기본값은 자동으로 설정되어 있습니다
-        - 변경하고 싶은 항목만 수정하세요
-        - 모든 항목을 입력하지 않아도 예측이 가능합니다
-        """
+        <div style="background: linear-gradient(135deg, #dbeafe, #bfdbfe); 
+                    padding: 1.2rem 1.5rem; border-radius: 12px; margin-bottom: 1.5rem;
+                    border-left: 5px solid #3b82f6;">
+            <div style="color: #1e40af; font-size: 1rem; font-weight: 600; margin-bottom: 0.5rem;">
+                💡 입력 방법
+            </div>
+            <ul style="color: #1e3a8a; margin: 0; padding-left: 1.5rem; line-height: 1.8;">
+                <li>기본값은 자동으로 설정되어 있습니다</li>
+                <li>변경하고 싶은 항목만 수정하세요</li>
+                <li>모든 항목을 입력하지 않아도 예측이 가능합니다</li>
+            </ul>
+        </div>
+        """,
+        unsafe_allow_html=True
     )
 
     with st.form('prediction_form'):
@@ -985,6 +1039,8 @@ with tab_predict:
                 st.success('✅ 모든 입력값이 유효합니다!')
         
         # Submit 버튼은 항상 생성 (조건부로 비활성화)
+        st.markdown("<br>", unsafe_allow_html=True)
+        
         submitted = st.form_submit_button(
             '🚀 예측 시작하기', 
             use_container_width=True, 
@@ -1052,105 +1108,182 @@ with tab_predict:
                 unsafe_allow_html=True,
             )
             
-            # 확률 시각화
+            # 예측 근거 분석
             if dropout_prob is not None and graduate_prob is not None:
-                st.markdown("### 📊 예측 확률 분석")
+                st.markdown("### 📊 예측 분석 및 근거")
                 
-                col1, col2 = st.columns(2)
+                # 확률 비교 바 차트
+                st.markdown("#### 🎯 예측 확률")
+                col1, col2 = st.columns([3, 2])
                 
                 with col1:
-                    # 도넛 차트
-                    fig_pie = go.Figure(data=[go.Pie(
-                        labels=['Dropout', 'Graduate'],
-                        values=[dropout_prob * 100, graduate_prob * 100],
-                        hole=.6,
-                        marker=dict(
-                            colors=['#ef4444', '#10b981'],
-                            line=dict(color='#ffffff', width=4)
-                        ),
-                        textinfo='label+percent',
-                        textfont=dict(size=16, color='#ffffff', family='Arial Black'),
-                        hovertemplate='<b>%{label}</b><br>확률: %{value:.2f}%<extra></extra>',
-                        pull=[0.05 if prediction == 0 else 0, 0.05 if prediction == 1 else 0]
-                    )])
+                    # 수평 바 차트로 확률 비교
+                    fig_bar = go.Figure()
                     
-                    # 중앙 텍스트
-                    max_prob = max(dropout_prob, graduate_prob)
-                    center_color = "#ef4444" if dropout_prob > graduate_prob else "#10b981"
+                    fig_bar.add_trace(go.Bar(
+                        y=['예측 결과'],
+                        x=[dropout_prob * 100],
+                        name='Dropout',
+                        orientation='h',
+                        marker=dict(color='#ef4444'),
+                        text=[f'{dropout_prob * 100:.1f}%'],
+                        textposition='inside',
+                        textfont=dict(size=18, color='white', family='Arial Black'),
+                        hovertemplate='<b>Dropout</b><br>확률: %{x:.2f}%<extra></extra>'
+                    ))
                     
-                    fig_pie.add_annotation(
-                        text=f'<b>{max_prob * 100:.1f}%</b>',
-                        x=0.5, y=0.5,
-                        font=dict(size=36, color=center_color, family='Arial Black'),
-                        showarrow=False
-                    )
+                    fig_bar.add_trace(go.Bar(
+                        y=['예측 결과'],
+                        x=[graduate_prob * 100],
+                        name='Graduate',
+                        orientation='h',
+                        marker=dict(color='#10b981'),
+                        text=[f'{graduate_prob * 100:.1f}%'],
+                        textposition='inside',
+                        textfont=dict(size=18, color='white', family='Arial Black'),
+                        hovertemplate='<b>Graduate</b><br>확률: %{x:.2f}%<extra></extra>'
+                    ))
                     
-                    fig_pie.update_layout(
+                    fig_bar.update_layout(
+                        barmode='stack',
                         title=dict(
-                            text='<b>🍩 확률 분포</b>',
-                            font=dict(size=20, color='#1f2937'),
+                            text='<b>📊 확률 분포 비교</b>',
+                            font=dict(size=18, color='#1f2937', family='Arial Black'),
                             x=0.5,
                             xanchor='center'
                         ),
+                        xaxis=dict(
+                            title=dict(text='확률 (%)', font=dict(size=14)),
+                            range=[0, 100],
+                            tickfont=dict(size=12),
+                            gridcolor='#e2e8f0'
+                        ),
+                        yaxis=dict(showticklabels=False),
                         showlegend=True,
                         legend=dict(
                             orientation="h",
                             yanchor="bottom",
-                            y=-0.2,
+                            y=1.02,
                             xanchor="center",
                             x=0.5,
-                            font=dict(size=14, color='#1f2937', family='Arial')
+                            font=dict(size=14, family='Arial')
                         ),
-                        paper_bgcolor="rgba(0,0,0,0)",
-                        height=400,
-                        margin=dict(l=20, r=20, t=80, b=20)
+                        plot_bgcolor='rgba(0,0,0,0)',
+                        paper_bgcolor='rgba(0,0,0,0)',
+                        height=250,
+                        margin=dict(l=20, r=20, t=80, b=50)
                     )
                     
-                    st.plotly_chart(fig_pie, use_container_width=True)
+                    st.plotly_chart(fig_bar, use_container_width=True)
                 
                 with col2:
-                    # 게이지 차트
-                    prediction_label = "Dropout" if dropout_prob > graduate_prob else "Graduate"
-                    main_prob = max(dropout_prob, graduate_prob)
-                    gauge_color = "#ef4444" if dropout_prob > graduate_prob else "#10b981"
+                    st.markdown("##### 📈 신뢰도")
+                    confidence = abs(dropout_prob - graduate_prob) * 100
                     
-                    fig_gauge = go.Figure(go.Indicator(
-                        mode="gauge+number",
-                        value=main_prob * 100,
-                        domain={'x': [0, 1], 'y': [0, 1]},
-                        title={'text': f"<b>{prediction_label} 확률</b>", 
-                               'font': {'size': 20, 'color': '#1f2937', 'family': 'Arial Black'}},
-                        number={'suffix': '%', 'font': {'size': 48, 'color': gauge_color, 'family': 'Arial Black'}},
-                        gauge={
-                            'axis': {'range': [None, 100], 'tickwidth': 2, 'tickcolor': gauge_color},
-                            'bar': {'color': gauge_color, 'thickness': 0.8},
-                            'bgcolor': "white",
-                            'borderwidth': 3,
-                            'bordercolor': "#e2e8f0",
-                            'steps': [
-                                {'range': [0, 33], 'color': '#fee2e2'},
-                                {'range': [33, 66], 'color': '#fef3c7'},
-                                {'range': [66, 100], 'color': '#d1fae5'}
-                            ],
-                            'threshold': {
-                                'line': {'color': gauge_color, 'width': 6},
-                                'thickness': 0.85,
-                                'value': main_prob * 100
-                            }
-                        }
-                    ))
+                    if confidence > 70:
+                        confidence_level = "매우 높음"
+                        confidence_color = "#10b981"
+                        confidence_icon = "🟢"
+                    elif confidence > 40:
+                        confidence_level = "높음"
+                        confidence_color = "#3b82f6"
+                        confidence_icon = "🔵"
+                    elif confidence > 20:
+                        confidence_level = "보통"
+                        confidence_color = "#f59e0b"
+                        confidence_icon = "🟡"
+                    else:
+                        confidence_level = "낮음"
+                        confidence_color = "#ef4444"
+                        confidence_icon = "🔴"
                     
-                    fig_gauge.update_layout(
-                        paper_bgcolor="rgba(0,0,0,0)",
-                        font={'color': "#1f2937", 'family': "Arial"},
-                        height=400,
-                        margin=dict(l=20, r=20, t=80, b=20)
+                    st.markdown(
+                        f"""
+                        <div style="background: linear-gradient(135deg, {confidence_color}15, {confidence_color}25); 
+                                    padding: 1.5rem; border-radius: 16px; margin-top: 1rem;
+                                    border: 2px solid {confidence_color}50; text-align: center;">
+                            <div style="font-size: 3rem; margin-bottom: 0.5rem;">{confidence_icon}</div>
+                            <div style="font-size: 2.5rem; font-weight: bold; color: {confidence_color}; margin-bottom: 0.5rem;">
+                                {confidence:.1f}%
+                            </div>
+                            <div style="font-size: 1.1rem; color: #475569; font-weight: 600;">
+                                {confidence_level}
+                            </div>
+                        </div>
+                        """,
+                        unsafe_allow_html=True
                     )
                     
-                    st.plotly_chart(fig_gauge, use_container_width=True)
+                    st.caption(f"💡 두 확률의 차이가 클수록 예측 신뢰도가 높습니다")
+                
+                # 주요 입력 값 분석
+                st.markdown("---")
+                st.markdown("#### 🔍 입력 데이터 분석")
+                
+                # 주요 변수들의 입력값 표시
+                key_input_features = {
+                    '1학기 이수 학점': 'Curricular units 1st sem (grade)',
+                    '2학기 이수 학점': 'Curricular units 2nd sem (grade)',
+                    '등록금 납부 여부': 'Tuition fees up to date',
+                    '장학금 수혜': 'Scholarship holder',
+                    '입학 시 나이': 'Age at enrollment',
+                }
+                
+                analysis_cols = st.columns(5)
+                for idx, (label, col_name) in enumerate(key_input_features.items()):
+                    if col_name in input_data:
+                        value = input_data[col_name]
+                        
+                        # 값 표시 형식 결정
+                        if col_name in categorical_options:
+                            # 범주형 변수
+                            display_value = "✅" if value in [1, '1', 'yes', True] else "❌"
+                            if col_name == 'Tuition fees up to date':
+                                status_color = "#10b981" if value in [1, '1'] else "#ef4444"
+                            elif col_name == 'Scholarship holder':
+                                status_color = "#10b981" if value in [1, '1'] else "#94a3b8"
+                            else:
+                                status_color = "#3b82f6"
+                        else:
+                            # 숫자형 변수
+                            display_value = f"{value:.1f}" if isinstance(value, (int, float)) else str(value)
+                            
+                            # 범위 내 위치에 따라 색상 결정
+                            if col_name in numeric_bounds:
+                                bounds = numeric_bounds[col_name]
+                                if bounds[0] is not None and bounds[1] is not None:
+                                    normalized = (float(value) - bounds[0]) / (bounds[1] - bounds[0])
+                                    if normalized > 0.7:
+                                        status_color = "#10b981"
+                                    elif normalized > 0.4:
+                                        status_color = "#3b82f6"
+                                    else:
+                                        status_color = "#f59e0b"
+                                else:
+                                    status_color = "#3b82f6"
+                            else:
+                                status_color = "#3b82f6"
+                        
+                        with analysis_cols[idx]:
+                            st.markdown(
+                                f"""
+                                <div style="background: white; padding: 1rem; border-radius: 12px;
+                                            border: 2px solid {status_color}50; text-align: center;
+                                            box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
+                                    <div style="font-size: 0.75rem; color: #64748b; margin-bottom: 0.5rem; font-weight: 600;">
+                                        {label}
+                                    </div>
+                                    <div style="font-size: 1.8rem; font-weight: bold; color: {status_color};">
+                                        {display_value}
+                                    </div>
+                                </div>
+                                """,
+                                unsafe_allow_html=True
+                            )
                 
                 # 상세 확률 카드
                 st.markdown("---")
+                st.markdown("#### 📋 상세 예측 결과")
                 detail_col1, detail_col2 = st.columns(2)
                 
                 with detail_col1:
@@ -1337,67 +1470,173 @@ with tab_predict:
         except Exception as exc:
             st.error(f'❌ 예측 중 오류가 발생했습니다: {exc}')
 
-with tab_feature:
-    st.markdown('### 📖 입력 항목 가이드')
-    st.caption('각 입력 항목에 대한 설명입니다')
-    if not feature_overview_df.empty:
-        st.dataframe(
-            feature_overview_df.sort_values(by='피처'),
-            use_container_width=True,
-            hide_index=True,
-        )
-    else:
-        st.info('피처 정보를 불러오지 못했습니다.')
-
-    st.markdown("---")
-    
-    if codebook_display_cols:
-        st.markdown("#### 🏷️ 선택 항목별 코드 설명")
-        with st.expander('📚 코드북 상세 보기', expanded=False):
-            for column in codebook_display_cols:
-                options = codebook_options_map.get(column, [])
-                if not options:
-                    continue
-                st.markdown(f"##### {get_field_label(column)}")
-                st.dataframe(pd.DataFrame(options), use_container_width=True, hide_index=True)
-                st.markdown("")
-
-    visible_categorical = [
-        col for col in categorical_cols if col not in HIDDEN_FEATURES and col not in codebook_display_cols
-    ]
-    if visible_categorical:
-        st.markdown("#### 📂 카테고리 항목 선택지")
-        with st.expander('🔍 가능한 값 확인하기', expanded=False):
-            for column in visible_categorical:
-                options = categorical_options.get(column, [])
-                if not options:
-                    continue
-                st.markdown(f"##### {get_field_label(column)}")
-                st.info(', '.join(str(opt) for opt in options))
-
-    hidden_columns = sorted(set(feature_cols).intersection(HIDDEN_FEATURES))
-    if hidden_columns:
-        st.markdown("---")
-        with st.expander('🔒 자동 처리되는 숨김 항목', expanded=False):
-            st.caption('다음 항목들은 자동으로 처리되어 입력하지 않아도 됩니다:')
-            st.write(', '.join(hidden_columns))
-
 with tab_insight:
-    st.markdown('### 📊 데이터 분석 인사이트')
-    st.caption('모델이 학습한 데이터의 패턴과 통계를 확인하세요')
+    st.markdown(
+        """
+        <div style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); 
+                    padding: 2rem; border-radius: 20px; margin-bottom: 2rem;
+                    box-shadow: 0 10px 30px rgba(240, 147, 251, 0.3);">
+            <h2 style="color: white; margin: 0; font-size: 2rem;">📊 데이터 인사이트</h2>
+            <p style="color: rgba(255,255,255,0.9); margin-top: 0.5rem; font-size: 1.1rem;">
+                학습 데이터의 핵심 통계와 패턴을 한눈에 확인하세요
+            </p>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
     
     if dataset_summary:
+        # 타겟 분포 시각화
         target_counts = dataset_summary.get('target_counts', {}) or {}
         if target_counts:
-            st.markdown('##### Target 분포')
-            target_df = pd.DataFrame(
-                {
-                    'Target': list(target_counts.keys()),
-                    'Count': [int(value) for value in target_counts.values()],
-                }
-            ).set_index('Target')
-            st.bar_chart(target_df)
-
+            st.markdown("### 🎯 학생 결과 분포")
+            
+            col1, col2 = st.columns([3, 2])
+            
+            with col1:
+                # Plotly 차트로 개선
+                dropout_count = target_counts.get('Dropout', 0)
+                graduate_count = target_counts.get('Graduate', 0)
+                total = dropout_count + graduate_count
+                
+                fig = go.Figure(data=[
+                    go.Bar(
+                        x=['Dropout', 'Graduate'],
+                        y=[dropout_count, graduate_count],
+                        marker=dict(
+                            color=['#ef4444', '#10b981'],
+                            line=dict(color='#ffffff', width=2)
+                        ),
+                        text=[f'{dropout_count:,}명<br>({dropout_count/total*100:.1f}%)', 
+                              f'{graduate_count:,}명<br>({graduate_count/total*100:.1f}%)'],
+                        textposition='auto',
+                        textfont=dict(size=14, color='white', family='Arial Black'),
+                        hovertemplate='<b>%{x}</b><br>학생 수: %{y:,}명<extra></extra>'
+                    )
+                ])
+                
+                fig.update_layout(
+                    title=dict(
+                        text='<b>📚 학습 데이터 현황</b>',
+                        font=dict(size=18, color='#1f2937', family='Arial Black'),
+                        x=0.5,
+                        xanchor='center'
+                    ),
+                    xaxis=dict(
+                        title=dict(
+                            text='결과',
+                            font=dict(size=14, color='#475569')
+                        ),
+                        tickfont=dict(size=12, color='#1f2937')
+                    ),
+                    yaxis=dict(
+                        title=dict(
+                            text='학생 수 (명)',
+                            font=dict(size=14, color='#475569')
+                        ),
+                        tickfont=dict(size=12),
+                        gridcolor='#e2e8f0'
+                    ),
+                    plot_bgcolor='rgba(0,0,0,0)',
+                    paper_bgcolor='rgba(0,0,0,0)',
+                    height=400,
+                    margin=dict(l=50, r=50, t=80, b=50)
+                )
+                
+                st.plotly_chart(fig, use_container_width=True)
+            
+            with col2:
+                st.markdown("#### 📈 주요 통계")
+                
+                # 통계 카드들
+                st.markdown(
+                    f"""
+                    <div style="background: linear-gradient(135deg, #fee2e2, #fecaca); 
+                                padding: 1.5rem; border-radius: 16px; margin-bottom: 1rem;
+                                border-left: 5px solid #ef4444;">
+                        <div style="font-size: 0.9rem; color: #991b1b; margin-bottom: 0.5rem; font-weight: 600;">
+                            ⚠️ 중도 이탈
+                        </div>
+                        <div style="font-size: 2.5rem; font-weight: bold; color: #7f1d1d;">
+                            {dropout_count:,}
+                        </div>
+                        <div style="font-size: 0.85rem; color: #991b1b; margin-top: 0.3rem;">
+                            전체의 {dropout_count/total*100:.1f}%
+                        </div>
+                    </div>
+                    """,
+                    unsafe_allow_html=True
+                )
+                
+                st.markdown(
+                    f"""
+                    <div style="background: linear-gradient(135deg, #d1fae5, #a7f3d0); 
+                                padding: 1.5rem; border-radius: 16px; margin-bottom: 1rem;
+                                border-left: 5px solid #10b981;">
+                        <div style="font-size: 0.9rem; color: #065f46; margin-bottom: 0.5rem; font-weight: 600;">
+                            🎓 졸업 완료
+                        </div>
+                        <div style="font-size: 2.5rem; font-weight: bold; color: #064e3b;">
+                            {graduate_count:,}
+                        </div>
+                        <div style="font-size: 0.85rem; color: #065f46; margin-top: 0.3rem;">
+                            전체의 {graduate_count/total*100:.1f}%
+                        </div>
+                    </div>
+                    """,
+                    unsafe_allow_html=True
+                )
+        
+        # 핵심 변수 범위 정보
+        st.markdown("---")
+        st.markdown("### 📏 주요 변수 범위")
+        st.caption("입력 시 참고할 수 있는 실제 데이터 범위입니다")
+        
+        key_numeric_features = [
+            'Age at enrollment',
+            'Curricular units 1st sem (grade)',
+            'Curricular units 2nd sem (grade)',
+            'Curricular units 1st sem (approved)',
+            'Curricular units 2nd sem (approved)',
+        ]
+        
+        range_cols = st.columns(2)
+        for idx, col_name in enumerate(key_numeric_features):
+            if col_name in numeric_bounds:
+                bounds = numeric_bounds[col_name]
+                lower, upper = bounds
+                
+                if lower is not None and upper is not None:
+                    with range_cols[idx % 2]:
+                        st.markdown(
+                            f"""
+                            <div style="background: white; padding: 1.2rem; border-radius: 12px;
+                                        border: 2px solid #e2e8f0; margin-bottom: 1rem;
+                                        box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
+                                <div style="color: #64748b; font-size: 0.85rem; margin-bottom: 0.5rem; font-weight: 600;">
+                                    {get_field_label(col_name)}
+                                </div>
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <div>
+                                        <div style="font-size: 0.75rem; color: #94a3b8;">최소</div>
+                                        <div style="font-size: 1.5rem; font-weight: bold; color: #3b82f6;">
+                                            {lower:.1f}
+                                        </div>
+                                    </div>
+                                    <div style="font-size: 1.5rem; color: #cbd5e1;">~</div>
+                                    <div>
+                                        <div style="font-size: 0.75rem; color: #94a3b8;">최대</div>
+                                        <div style="font-size: 1.5rem; font-weight: bold; color: #8b5cf6;">
+                                            {upper:.1f}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            """,
+                            unsafe_allow_html=True
+                        )
+        
+        # 전체 변수 범위 (접을 수 있는 형태)
         numeric_range_rows: List[Dict[str, Any]] = []
         for column, bounds in numeric_bounds.items():
             if column in HIDDEN_FEATURES:
@@ -1419,29 +1658,127 @@ with tab_insight:
                     upper_display = upper
             numeric_range_rows.append(
                 {
-                    '피처': column,
+                    '항목': get_field_label(column),
                     '최소값': lower_display,
                     '최대값': upper_display,
+                    '범위': f"{lower_display} ~ {upper_display}" if lower_display and upper_display else '-'
                 }
             )
-
+        
         if numeric_range_rows:
             st.markdown("---")
-            st.markdown("#### 📏 숫자형 데이터 범위")
-            with st.expander('📊 상세 범위 확인하기', expanded=False):
-                range_df = pd.DataFrame(numeric_range_rows).sort_values(by='피처')
+            with st.expander('📊 **전체 변수 범위 상세보기**', expanded=False):
+                range_df = pd.DataFrame(numeric_range_rows).sort_values(by='항목')
                 st.dataframe(
-                    range_df, 
+                    range_df[['항목', '최소값', '최대값', '범위']], 
                     use_container_width=True, 
                     hide_index=True,
                     column_config={
-                        '피처': st.column_config.TextColumn('항목', width='large'),
+                        '항목': st.column_config.TextColumn('항목', width='large'),
                         '최소값': st.column_config.NumberColumn('최소값', format='%.2f'),
                         '최대값': st.column_config.NumberColumn('최대값', format='%.2f'),
+                        '범위': st.column_config.TextColumn('범위'),
                     }
                 )
-
+        
+        # 인사이트 박스
         st.markdown("---")
-        st.info('📌 **참고**: 모든 통계와 범위는 실제 학습에 사용된 dataset.csv 데이터를 기준으로 합니다.')
+        st.markdown("### 💡 데이터 인사이트")
+        
+        insight_col1, insight_col2, insight_col3 = st.columns(3)
+        
+        with insight_col1:
+            st.markdown(
+                """
+                <div style="background: linear-gradient(135deg, #dbeafe, #bfdbfe); 
+                            padding: 1.5rem; border-radius: 16px; border-left: 5px solid #3b82f6;
+                            min-height: 240px; display: flex; flex-direction: column;">
+                    <h4 style="color: #1e40af; margin-top: 0; margin-bottom: 1rem;">🎯 모델 특징</h4>
+                    <ul style="color: #1e3a8a; line-height: 1.8; margin: 0; padding-left: 1.2rem; flex-grow: 1;">
+                        <li>Random Forest 알고리즘 사용</li>
+                        <li>정확도 <strong>91.46%</strong></li>
+                        <li>Dropout 탐지율 <strong>97%</strong></li>
+                        <li>F1-score <strong>0.93</strong></li>
+                    </ul>
+                </div>
+                """,
+                unsafe_allow_html=True
+            )
+        
+        with insight_col2:
+            st.markdown(
+                """
+                <div style="background: linear-gradient(135deg, #fef3c7, #fde68a); 
+                            padding: 1.5rem; border-radius: 16px; border-left: 5px solid #f59e0b;
+                            min-height: 240px; display: flex; flex-direction: column;">
+                    <h4 style="color: #92400e; margin-top: 0; margin-bottom: 1rem;">📚 주요 예측 변수</h4>
+                    <ul style="color: #78350f; line-height: 1.8; margin: 0; padding-left: 1.2rem; flex-grow: 1;">
+                        <li>1-2학기 성적 (<strong>48%</strong>)</li>
+                        <li>등록금 납부 여부 (<strong>14%</strong>)</li>
+                        <li>입학 시 나이 (<strong>12%</strong>)</li>
+                        <li>장학금 수혜 여부</li>
+                    </ul>
+                </div>
+                """,
+                unsafe_allow_html=True
+            )
+        
+        with insight_col3:
+            st.markdown(
+                """
+                <div style="background: linear-gradient(135deg, #fce7f3, #fbcfe8); 
+                            padding: 1.5rem; border-radius: 16px; border-left: 5px solid #ec4899;
+                            min-height: 240px; display: flex; flex-direction: column;">
+                    <h4 style="color: #9f1239; margin-top: 0; margin-bottom: 1rem;">🔍 데이터 전처리</h4>
+                    <ul style="color: #831843; line-height: 1.8; margin: 0; padding-left: 1.2rem; flex-grow: 1;">
+                        <li><strong>Enrolled</strong> 데이터는 학습에서 <strong>제외</strong></li>
+                        <li>중퇴 여부가 아직 결정되지 않은 재학생 데이터</li>
+                        <li>예측 모델은 <strong>Dropout</strong>과 <strong>Graduate</strong>만 학습</li>
+                        <li style="margin-top: 0.5rem; opacity: 0.9;">이진 분류로 명확한 예측 제공</li>
+                    </ul>
+                </div>
+                """,
+                unsafe_allow_html=True
+            )
+        
+        st.markdown(
+            """
+            <div style="background: #f8fafc; padding: 1rem; border-radius: 12px; 
+                        margin-top: 1.5rem; border: 1px solid #e2e8f0; text-align: center;">
+                <span style="color: #64748b; font-size: 0.95rem;">
+                    📌 모든 통계는 실제 학습 데이터 (<strong>{:,}명</strong>)를 기반으로 합니다
+                </span>
+            </div>
+            """.format(dataset_summary.get('row_count', 0)),
+            unsafe_allow_html=True
+        )
+        
+        # 자동 처리 항목
+        hidden_columns = sorted(set(feature_cols).intersection(HIDDEN_FEATURES))
+        if hidden_columns:
+            st.markdown("---")
+            st.markdown("### 🔒 자동 처리 항목")
+            st.caption("다음 항목들은 예측 시 자동으로 기본값이 적용되므로 사용자가 입력할 필요가 없습니다")
+            
+            # 3열 그리드로 표시
+            cols = st.columns(3)
+            for idx, col_name in enumerate(hidden_columns):
+                with cols[idx % 3]:
+                    st.markdown(
+                        f"""
+                        <div style="background: linear-gradient(135deg, #f8fafc, #f1f5f9); 
+                                    padding: 1rem; border-radius: 10px; 
+                                    text-align: center; border: 2px solid #e2e8f0; 
+                                    margin-bottom: 0.8rem; min-height: 80px;
+                                    display: flex; align-items: center; justify-content: center;">
+                            <span style="color: #475569; font-size: 0.9rem; font-weight: 500;">
+                                {get_field_label(col_name)}
+                            </span>
+                        </div>
+                        """,
+                        unsafe_allow_html=True
+                    )
+            
+            st.info("💡 **참고**: 이러한 항목들은 모델 성능에 큰 영향을 주지 않거나, 데이터의 중앙값/최빈값으로 자동 처리됩니다.")
     else:
         st.warning('⚠️ dataset.csv 파일을 찾을 수 없습니다. 데이터 분석을 위해서는 데이터 파일이 필요합니다.')
