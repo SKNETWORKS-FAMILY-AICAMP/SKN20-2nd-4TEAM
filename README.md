@@ -9,13 +9,13 @@
 <table>
   <tr>
     <td align="center">
-      <img src="./img/squid.png" width="100"><br>
+      <img src="./img/final_squid.png" width="100"><br>
       <b>김황현</b><br>
       팀장 / 데이터 엔지니어<br>
       <sub>전체 프로젝트 기획, 파이프라인 설계 및 모델링 전략 수립</sub>
     </td>
     <td align="center">
-      <img src="./img/patric.png" width="100"><br>
+      <img src="./img/final_ddoong.png" width="100"><br>
       <b>이도경</b><br>
       데이터 분석 담당<br>
       <sub>EDA, 전처리 및 변수 중요도 분석, 시각화 보고서 제작</sub>
@@ -33,7 +33,7 @@
       <sub>신경망 설계, 딥러닝 모델 구현 및 성능 비교</sub>
     </td>
     <td align="center">
-      <img src="./img/mee.png" width="100"><br>
+      <img src="./img/final_squirral.png" width="100"><br>
       <b>최유정</b><br>
       프론트엔드/UI<br>
       <sub>Streamlit 화면 설계 및 발표 자료 제작, README 정리</sub>
