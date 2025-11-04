@@ -382,6 +382,18 @@ FIELD_LABELS: Dict[str, str] = {
 }
 
 
+def render_metric_card(column, label: str, value: str) -> None:
+    column.markdown(
+        f"""
+        <div class="metric-wrapper">
+            <div class="metric-label">{label}</div>
+            <div class="metric-value">{value}</div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+
 @st.cache_resource(show_spinner=False)
 def load_pipeline():
     if not MODEL_PATH.exists():
@@ -419,14 +431,30 @@ def load_metadata():
 
     dataset_modes: Dict[str, Any] = {}
     numeric_bounds: Dict[str, Tuple[Optional[float], Optional[float]]] = {}
+    dataset_summary: Dict[str, Any] = {}
     if DATASET_PATH.exists():
         try:
             dataset_df = pd.read_csv(DATASET_PATH)
             dataset_modes = compute_feature_modes(dataset_df, feature_names)
             numeric_bounds = compute_numeric_bounds(dataset_df, numeric_cols)
+            dataset_summary = {
+                'row_count': int(len(dataset_df)),
+                'feature_count': int(dataset_df.shape[1]),
+            }
+            if 'Target' in dataset_df.columns:
+                target_counts_series = dataset_df['Target'].value_counts(dropna=False)
+                target_counts: Dict[str, int] = {
+                    str(index): int(count) for index, count in target_counts_series.items()
+                }
+                dataset_summary['target_counts'] = target_counts
+                total_count = sum(target_counts.values())
+                if total_count > 0:
+                    dataset_summary['dropout_ratio'] = target_counts.get('Dropout', 0) / total_count
+                    dataset_summary['graduate_ratio'] = target_counts.get('Graduate', 0) / total_count
         except Exception:
             dataset_modes = {}
             numeric_bounds = {}
+            dataset_summary = {}
 
     auto_fill_defaults: Dict[str, Any] = {
         column: dataset_modes.get(column) for column in feature_names
@@ -466,12 +494,154 @@ def load_metadata():
         categorical_options,
         auto_fill_defaults,
         numeric_bounds,
+        dataset_summary,
     )
 
 
 st.set_page_config(page_title='학생 이탈 예측', layout='wide')
-st.title('학생 이탈(졸업 여부) 예측')
-st.write('저장된 파이프라인을 사용하여 학생 정보를 입력하면 Dropout 확률을 예측합니다.')
+
+st.markdown(
+    """
+    <style>
+    :root {
+        --primary-color: #3b82f6;
+        --accent-color: #0ea5e9;
+    }
+    [data-testid="stAppViewContainer"] {
+        background: linear-gradient(135deg, #ffffff 0%, #f4f7fb 100%);
+    }
+    [data-testid="stSidebar"] > div:first-child {
+        background: linear-gradient(180deg, #111827 0%, #1f2937 100%);
+        color: #f9fafb;
+    }
+    [data-testid="stSidebar"] h1, [data-testid="stSidebar"] h2, [data-testid="stSidebar"] h3 {
+        color: #f9fafb;
+    }
+    .hero-section {
+        padding: 2.5rem 3rem;
+        border-radius: 18px;
+        background: linear-gradient(135deg, rgba(59,130,246,0.95), rgba(14,165,233,0.9));
+        color: #ffffff;
+        box-shadow: 0 18px 35px rgba(15, 23, 42, 0.18);
+        margin-bottom: 1.5rem;
+    }
+    .hero-section h1 {
+        margin: 0;
+        font-size: 2.2rem;
+        font-weight: 700;
+    }
+    .hero-section p {
+        margin-top: 0.75rem;
+        font-size: 1.05rem;
+        opacity: 0.9;
+    }
+    .metric-wrapper {
+        padding: 1.1rem 1.4rem;
+        border-radius: 14px;
+        background: rgba(255, 255, 255, 0.85);
+        box-shadow: 0 12px 28px rgba(15, 23, 42, 0.12);
+        border: 1px solid rgba(148, 163, 184, 0.25);
+    }
+    .metric-label {
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        color: #64748b;
+        letter-spacing: 0.08em;
+        margin-bottom: 0.35rem;
+    }
+    .metric-value {
+        font-size: 1.45rem;
+        font-weight: 600;
+        color: #0f172a;
+    }
+    .result-card {
+        background: #ffffff;
+        border-radius: 16px;
+        padding: 1.6rem;
+        box-shadow: 0 18px 32px rgba(15, 23, 42, 0.16);
+        border: 1px solid rgba(148, 163, 184, 0.25);
+    }
+    .result-card h3 {
+        margin-top: 0;
+        margin-bottom: 0.9rem;
+        font-weight: 600;
+    }
+    .result-badge {
+        display: inline-block;
+        padding: 0.6rem 1.1rem;
+        border-radius: 999px;
+        background: rgba(59,130,246,0.12);
+        color: #1d4ed8;
+        font-weight: 600;
+        margin-bottom: 0.8rem;
+    }
+    .prob-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+        gap: 1rem;
+        margin-top: 1rem;
+    }
+    .prob-box {
+        padding: 0.9rem 1.1rem;
+        border-radius: 12px;
+        background: rgba(241,245,249,0.7);
+    }
+    .prob-label {
+        font-size: 0.85rem;
+        color: #475569;
+        font-weight: 500;
+        margin-bottom: 0.25rem;
+    }
+    .prob-value {
+        font-size: 1.35rem;
+        font-weight: 600;
+        color: #0f172a;
+    }
+    .sidebar-tips {
+        padding: 1rem 1.1rem;
+        border-radius: 14px;
+        background: rgba(15,23,42,0.35);
+        border: 1px solid rgba(148,163,184,0.2);
+    }
+    .stTabs [role="tab"] {
+        padding: 0.75rem 1.4rem;
+        border-radius: 12px 12px 0 0;
+        margin-right: 0.5rem;
+        background-color: rgba(255,255,255,0.55);
+        font-weight: 600;
+    }
+    .stTabs [role="tab"][aria-selected="true"] {
+        background: #ffffff;
+        box-shadow: 0 -6px 18px rgba(15, 23, 42, 0.12);
+        border-bottom: 2px solid transparent;
+    }
+    .stButton > button {
+        background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+        border: none;
+        color: #ffffff;
+        padding: 0.7rem 1.8rem;
+        border-radius: 999px;
+        font-weight: 600;
+        box-shadow: 0 12px 24px rgba(59, 130, 246, 0.25);
+    }
+    .stButton > button:hover {
+        filter: brightness(1.05);
+    }
+    </style>
+    """,
+    unsafe_allow_html=True,
+)
+
+st.markdown(
+    """
+    <div class="hero-section">
+        <h1>학생 이탈(졸업 여부) 예측 대시보드</h1>
+        <p>학습된 머신러닝 파이프라인을 기반으로 학생 정보를 입력하면 Dropout 위험도를 예측하고
+        필요한 피처를 효율적으로 관리할 수 있습니다.</p>
+    </div>
+    """,
+    unsafe_allow_html=True,
+)
 
 try:
     (
@@ -483,6 +653,7 @@ try:
         categorical_options,
         auto_fill_defaults,
         numeric_bounds,
+        dataset_summary,
     ) = load_metadata()
     pipeline = load_pipeline()
 except Exception as exc:
@@ -502,6 +673,25 @@ for col in feature_cols:
     if col not in auto_fill_values:
         auto_fill_values[col] = auto_fill_defaults.get(col)
 
+feature_overview_rows: List[Dict[str, Any]] = []
+for column in feature_cols:
+    if column in numeric_cols:
+        feature_type = '숫자형'
+    elif column in categorical_cols:
+        feature_type = '범주형'
+    else:
+        feature_type = '기타'
+    preview_value = auto_fill_values.get(column)
+    feature_overview_rows.append(
+        {
+            '피처': column,
+            '한글 라벨': get_field_label(column),
+            '유형': feature_type,
+            '기본값 미리보기': '' if preview_value is None else preview_value,
+        }
+    )
+feature_overview_df = pd.DataFrame(feature_overview_rows)
+
 codebook_options_map: Dict[str, List[Dict[str, object]]] = {}
 for column in CODEBOOK_LABELS:
     if column not in feature_cols or column in HIDDEN_FEATURES:
@@ -515,137 +705,292 @@ display_numeric_cols = [col for col in display_numeric_cols if col not in codebo
 display_categorical_cols = [col for col in display_categorical_cols if col not in codebook_display_cols]
 
 with st.sidebar:
-    st.header('입력 방법 안내')
+    st.markdown('## Quick Guide')
     st.markdown(
         """
-        - 학습된 파이프라인이 요구하는 피처만 입력하면 됩니다.
-        - 숫자형 값은 기본 제안값을 사용하거나 자유롭게 수정하세요.
-        - 범주형 값은 제공된 선택지를 사용하거나 직접 입력할 수도 있습니다.
-        - 값을 변경한 후 **예측 실행** 버튼을 눌러 결과를 확인하세요.
-        """
+        <div class="sidebar-tips">
+            <ul style="list-style-type:none; padding-left:0; margin:0;">
+                <li>✅ 기본값은 학습 데이터의 최빈값을 사용합니다.</li>
+                <li>🔢 숫자형 입력은 placeholder로 최소/최대 범위를 확인할 수 있습니다.</li>
+                <li>🧾 범주형은 코드북 라벨을 바탕으로 선택하거나 직접 입력할 수 있습니다.</li>
+                <li>🚀 설정 후 <strong>예측 실행</strong>을 눌러 결과와 확률을 확인하세요.</li>
+            </ul>
+        </div>
+        """,
+        unsafe_allow_html=True,
     )
+    st.caption('입력 필드는 학습 파이프라인 스키마와 동기화되어 있습니다.')
 
-with st.form('prediction_form'):
-    st.subheader('학생 특성 입력')
-    input_data: Dict[str, Any] = {}
+if dataset_summary:
+    st.markdown('### 데이터 한눈에 보기')
+    metric_cols = st.columns(4)
+    total_records = int(dataset_summary.get('row_count', 0))
+    feature_count = int(dataset_summary.get('feature_count', 0))
+    target_counts = dataset_summary.get('target_counts', {}) or {}
+    total_target_count = sum(target_counts.values()) if target_counts else 0
+    dropout_ratio = dataset_summary.get('dropout_ratio')
+    graduate_ratio = dataset_summary.get('graduate_ratio')
 
-    if codebook_display_cols:
-        st.markdown('---')
-        codebook_layout = st.columns(max(1, min(len(codebook_display_cols), 3)))
-        for idx, column in enumerate(codebook_display_cols):
-            options = codebook_options_map.get(column, [])
-            if not options:
-                continue
-            default_value = auto_fill_values.get(column)
-            default_index = 0
-            if default_value is not None:
-                for opt_idx, option in enumerate(options):
-                    if str(option['value']) == str(default_value):
-                        default_index = opt_idx
-                        break
-            with codebook_layout[idx % len(codebook_layout)]:
-                selection = st.selectbox(
-                    get_field_label(column),
-                    options,
-                    index=default_index,
-                    format_func=format_codebook_option,
-                )
-            input_data[column] = selection['value']
+    render_metric_card(metric_cols[0], '데이터 샘플 수', f"{total_records:,}")
+    render_metric_card(metric_cols[1], '사용 피처 수', str(feature_count))
+    dropout_display = f"{dropout_ratio * 100:.1f}%" if dropout_ratio is not None else '--'
+    render_metric_card(metric_cols[2], 'Dropout 비율', dropout_display)
+    if graduate_ratio is not None:
+        render_metric_card(metric_cols[3], 'Graduate 비율', f"{graduate_ratio * 100:.1f}%")
+    elif total_target_count > 0 and target_counts:
+        top_label = max(target_counts, key=target_counts.get)
+        top_share = target_counts[top_label] / total_target_count
+        render_metric_card(metric_cols[3], f'최다 클래스 ({top_label})', f"{top_share * 100:.1f}%")
+    else:
+        render_metric_card(metric_cols[3], 'Graduate 비율', '--')
+    st.markdown('')
+else:
+    st.warning('dataset.csv 파일을 찾을 수 없습니다. 데이터 통계를 표시하려면 파일을 준비하세요.')
 
-    if display_numeric_cols:
-        numeric_layout = st.columns(max(1, min(len(display_numeric_cols), 3)))
-        for idx, column in enumerate(display_numeric_cols):
-            default_config = numeric_defaults.get(column, {'value': 0.0, 'step': 0.1})
-            default_value = default_config['value']
-            step_value = default_config['step']
-            placeholder_text = None
-            min_max = numeric_bounds.get(column)
-            if min_max is not None:
-                lower, upper = min_max
-                if lower is not None and upper is not None:
-                    try:
-                        lower_int = int(float(lower))
-                        upper_int = int(float(upper))
-                        placeholder_text = f"{lower_int} ~ {upper_int}"
-                    except (TypeError, ValueError):
-                        placeholder_text = None
-            with numeric_layout[idx % len(numeric_layout)]:
-                number_kwargs: Dict[str, Any] = {
-                    'label': get_field_label(column),
-                    'value': default_value,
-                    'step': step_value,
-                }
-                if placeholder_text is not None:
-                    number_kwargs['placeholder'] = placeholder_text
-                value = st.number_input(**number_kwargs)
-            input_data[column] = value
+tab_predict, tab_feature, tab_insight = st.tabs(['예측 실행', '피처 가이드', '데이터 인사이트'])
 
-    if display_categorical_cols:
-        st.markdown('---')
-        categorical_layout = st.columns(max(1, min(len(display_categorical_cols), 2)))
-        for idx, column in enumerate(display_categorical_cols):
-            options = categorical_options.get(column, [])
-            default_option = categorical_defaults.get(column, options[0] if options else '')
-            with categorical_layout[idx % len(categorical_layout)]:
-                if options:
-                    try:
-                        default_index = options.index(default_option)
-                    except ValueError:
-                        default_index = 0
+with tab_predict:
+    st.markdown('#### 예측 입력')
+    st.caption('최빈값으로 채워진 기본 입력을 검토하고 필요한 항목만 수정한 뒤 예측을 실행하세요.')
+
+    with st.form('prediction_form'):
+        input_data: Dict[str, Any] = {}
+
+        if codebook_display_cols:
+            st.markdown('##### 코드북 기반 주요 항목')
+            st.caption('공식 코드 라벨을 참고하여 빠르게 선택할 수 있습니다.')
+            codebook_layout = st.columns(max(1, min(len(codebook_display_cols), 3)))
+            for idx, column in enumerate(codebook_display_cols):
+                options = codebook_options_map.get(column, [])
+                if not options:
+                    continue
+                default_value = auto_fill_values.get(column)
+                default_index = 0
+                if default_value is not None:
+                    for opt_idx, option in enumerate(options):
+                        if str(option['value']) == str(default_value):
+                            default_index = opt_idx
+                            break
+                with codebook_layout[idx % len(codebook_layout)]:
                     selection = st.selectbox(
                         get_field_label(column),
                         options,
                         index=default_index,
+                        format_func=format_codebook_option,
                     )
+                input_data[column] = selection['value']
+
+        if display_numeric_cols:
+            st.markdown('---')
+            st.markdown('##### 숫자형 피처')
+            numeric_layout = st.columns(max(1, min(len(display_numeric_cols), 3)))
+            for idx, column in enumerate(display_numeric_cols):
+                default_config = numeric_defaults.get(column, {'value': 0.0, 'step': 0.1})
+                default_value = default_config['value']
+                step_value = default_config['step']
+                placeholder_text = None
+                min_max = numeric_bounds.get(column)
+                if min_max is not None:
+                    lower, upper = min_max
+                    if lower is not None and upper is not None:
+                        try:
+                            lower_int = int(float(lower))
+                            upper_int = int(float(upper))
+                            placeholder_text = f"{lower_int} ~ {upper_int}"
+                        except (TypeError, ValueError):
+                            placeholder_text = None
+                with numeric_layout[idx % len(numeric_layout)]:
+                    number_kwargs: Dict[str, Any] = {
+                        'label': get_field_label(column),
+                        'value': default_value,
+                        'step': step_value,
+                    }
+                    if placeholder_text is not None:
+                        number_kwargs['placeholder'] = placeholder_text
+                    value = st.number_input(**number_kwargs)
+                input_data[column] = value
+
+        if display_categorical_cols:
+            st.markdown('---')
+            st.markdown('##### 범주형 피처')
+            categorical_layout = st.columns(max(1, min(len(display_categorical_cols), 2)))
+            for idx, column in enumerate(display_categorical_cols):
+                options = categorical_options.get(column, [])
+                default_option = categorical_defaults.get(column, options[0] if options else '')
+                with categorical_layout[idx % len(categorical_layout)]:
+                    if options:
+                        try:
+                            default_index = options.index(default_option)
+                        except ValueError:
+                            default_index = 0
+                        selection = st.selectbox(
+                            get_field_label(column),
+                            options,
+                            index=default_index,
+                        )
+                    else:
+                        selection = st.text_input(get_field_label(column), value=default_option)
+                input_data[column] = selection
+
+        other_columns = [
+            col for col in feature_cols if col not in set(numeric_cols) | set(categorical_cols)
+        ]
+        if other_columns:
+            st.markdown('---')
+            st.markdown('##### 기타 피처')
+            for column in other_columns:
+                default_text = auto_fill_values.get(column)
+                if default_text is None:
+                    default_text = ''
                 else:
-                    selection = st.text_input(get_field_label(column), value=default_option)
-            input_data[column] = selection
+                    default_text = str(default_text)
+                input_data[column] = st.text_input(get_field_label(column), value=default_text)
 
-    other_columns = [
-        col for col in feature_cols if col not in set(numeric_cols) | set(categorical_cols)
+        for hidden_feature in HIDDEN_FEATURES:
+            if hidden_feature in feature_cols and hidden_feature not in input_data:
+                input_data[hidden_feature] = auto_fill_values.get(hidden_feature)
+
+        submitted = st.form_submit_button('예측 실행', use_container_width=True)
+
+    if submitted:
+        try:
+            for column in feature_cols:
+                input_data.setdefault(column, None)
+            input_df = pd.DataFrame([input_data], columns=feature_cols)
+
+            if not hasattr(pipeline, 'predict'):
+                raise AttributeError('로딩된 객체는 예측 기능을 제공하지 않습니다.')
+
+            prediction = pipeline.predict(input_df)[0]
+            dropout_prob = graduate_prob = None
+            if hasattr(pipeline, 'predict_proba'):
+                probabilities = pipeline.predict_proba(input_df)[0]
+                dropout_prob = float(probabilities[0])
+                graduate_prob = float(probabilities[1])
+
+            st.success('예측이 완료되었습니다.')
+            badge_text = 'Dropout' if prediction == 0 else 'Graduate'
+            description_text = (
+                '학생의 중도 이탈 가능성이 더 높게 예측되었습니다.'
+                if prediction == 0
+                else '학생이 졸업할 가능성이 더 높게 예측되었습니다.'
+            )
+            prob_section = ''
+            if dropout_prob is not None and graduate_prob is not None:
+                prob_section = (
+                    '<div class="prob-grid">'
+                    '<div class="prob-box">'
+                    '<div class="prob-label">Dropout 확률</div>'
+                    f'<div class="prob-value">{dropout_prob * 100:.2f}%</div>'
+                    '</div>'
+                    '<div class="prob-box">'
+                    '<div class="prob-label">Graduate 확률</div>'
+                    f'<div class="prob-value">{graduate_prob * 100:.2f}%</div>'
+                    '</div>'
+                    '</div>'
+                )
+
+            st.markdown(
+                f"""
+                <div class="result-card">
+                    <h3>예측 리포트</h3>
+                    <span class="result-badge">{badge_text}</span>
+                    <p style="margin:0; color:#475569;">{description_text}</p>
+                    {prob_section}
+                </div>
+                """,
+                unsafe_allow_html=True,
+            )
+
+            with st.expander('입력 값 상세 보기', expanded=False):
+                st.json(json.dumps(input_data, ensure_ascii=False, indent=2))
+        except Exception as exc:
+            st.error(f'예측 중 오류가 발생했습니다: {exc}')
+    else:
+        st.info('예측을 확인하려면 정보를 입력한 뒤 예측 실행 버튼을 눌러 주세요.')
+
+with tab_feature:
+    st.markdown('#### 피처 요약')
+    if not feature_overview_df.empty:
+        st.dataframe(
+            feature_overview_df.sort_values(by='피처'),
+            use_container_width=True,
+            hide_index=True,
+        )
+    else:
+        st.info('피처 정보를 불러오지 못했습니다.')
+
+    if codebook_display_cols:
+        with st.expander('코드북 라벨 매핑', expanded=False):
+            for column in codebook_display_cols:
+                options = codebook_options_map.get(column, [])
+                if not options:
+                    continue
+                st.markdown(f"**{get_field_label(column)} ({column})**")
+                st.dataframe(pd.DataFrame(options), use_container_width=True, hide_index=True)
+
+    visible_categorical = [
+        col for col in categorical_cols if col not in HIDDEN_FEATURES and col not in codebook_display_cols
     ]
-    if other_columns:
-        st.markdown('---')
-        for column in other_columns:
-            default_text = auto_fill_values.get(column)
-            if default_text is None:
-                default_text = ''
-            else:
-                default_text = str(default_text)
-            input_data[column] = st.text_input(get_field_label(column), value=default_text)
+    if visible_categorical:
+        with st.expander('범주형 피처 선택지', expanded=False):
+            for column in visible_categorical:
+                options = categorical_options.get(column, [])
+                if not options:
+                    continue
+                st.markdown(f"**{get_field_label(column)} ({column})**")
+                st.write(', '.join(str(opt) for opt in options))
 
-    for hidden_feature in HIDDEN_FEATURES:
-        if hidden_feature in feature_cols and hidden_feature not in input_data:
-            input_data[hidden_feature] = auto_fill_values.get(hidden_feature)
+    hidden_columns = sorted(set(feature_cols).intersection(HIDDEN_FEATURES))
+    if hidden_columns:
+        st.caption('화면에서 숨김 처리된 피처: ' + ', '.join(hidden_columns))
 
-    submitted = st.form_submit_button('예측 실행')
+with tab_insight:
+    st.markdown('#### 데이터 인사이트')
+    if dataset_summary:
+        target_counts = dataset_summary.get('target_counts', {}) or {}
+        if target_counts:
+            st.markdown('##### Target 분포')
+            target_df = pd.DataFrame(
+                {
+                    'Target': list(target_counts.keys()),
+                    'Count': [int(value) for value in target_counts.values()],
+                }
+            ).set_index('Target')
+            st.bar_chart(target_df)
 
-if submitted:
-    try:
-        for column in feature_cols:
-            input_data.setdefault(column, None)
-        input_df = pd.DataFrame([input_data], columns=feature_cols)
+        numeric_range_rows: List[Dict[str, Any]] = []
+        for column, bounds in numeric_bounds.items():
+            if column in HIDDEN_FEATURES:
+                continue
+            lower, upper = bounds
+            lower_display: Any = ''
+            upper_display: Any = ''
+            if lower is not None:
+                try:
+                    lower_float = float(lower)
+                    lower_display = int(lower_float) if lower_float.is_integer() else round(lower_float, 2)
+                except (TypeError, ValueError):
+                    lower_display = lower
+            if upper is not None:
+                try:
+                    upper_float = float(upper)
+                    upper_display = int(upper_float) if upper_float.is_integer() else round(upper_float, 2)
+                except (TypeError, ValueError):
+                    upper_display = upper
+            numeric_range_rows.append(
+                {
+                    '피처': column,
+                    '최소값': lower_display,
+                    '최대값': upper_display,
+                }
+            )
 
-        if not hasattr(pipeline, 'predict'):
-            raise AttributeError('로딩된 객체는 예측 기능을 제공하지 않습니다.')
+        if numeric_range_rows:
+            with st.expander('숫자형 피처 범위', expanded=False):
+                range_df = pd.DataFrame(numeric_range_rows).sort_values(by='피처')
+                st.dataframe(range_df, use_container_width=True, hide_index=True)
 
-        prediction = pipeline.predict(input_df)[0]
-        dropout_prob = graduate_prob = None
-        if hasattr(pipeline, 'predict_proba'):
-            probabilities = pipeline.predict_proba(input_df)[0]
-            dropout_prob = float(probabilities[0])
-            graduate_prob = float(probabilities[1])
-
-        st.success('예측이 완료되었습니다.')
-        col_pred, col_prob = st.columns(2)
-        with col_pred:
-            st.metric('예측 결과', 'Dropout' if prediction == 0 else 'Graduate')
-        if dropout_prob is not None and graduate_prob is not None:
-            with col_prob:
-                st.metric('Dropout 확률', f'{dropout_prob * 100:.2f}%')
-                st.metric('Graduate 확률', f'{graduate_prob * 100:.2f}%')
-
-        st.markdown('### 입력 값 확인')
-        st.json(json.dumps(input_data, ensure_ascii=False, indent=2))
-    except Exception as exc:
-        st.error(f'예측 중 오류가 발생했습니다: {exc}')
+        st.caption('범위와 통계는 dataset.csv 기준입니다.')
+    else:
+        st.warning('dataset.csv 파일을 찾을 수 없습니다. 데이터 인사이트를 표시하려면 파일을 준비하세요.')
