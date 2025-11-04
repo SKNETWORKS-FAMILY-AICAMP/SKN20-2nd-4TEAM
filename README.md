@@ -154,8 +154,8 @@
 
 | 구분 | 컬럼 수 | 컬럼명 |
 |----------|----------|--------|
-| ✅ **사용 컬럼 (28)** | 28 | `Age at enrollment`, `Application mode`, `Application order`, `Curricular units 1st/2nd sem (approved, grade, enrolled, evaluations...)`, `Daytime/evening attendance`, `Debtor`, `Displaced`, `Gender`, `Scholarship holder`, `Tuition fees up to date`, `Mother's qualification`, `Father's occupation`, `GDP`, `Inflation rate`, `Previous qualification`, `Marital status` 등 |
-| ❌ **제거 컬럼 (6)** | 6 | `Course`, `Educational special needs`, `Father's qualification`, `International`, `Nacionality`, `Unemployment rate` |
+| **사용 컬럼 (28)** | 28 | `Age at enrollment`, `Application mode`, `Application order`, `Curricular units 1st/2nd sem (approved, grade, enrolled, evaluations...)`, `Daytime/evening attendance`, `Debtor`, `Displaced`, `Gender`, `Scholarship holder`, `Tuition fees up to date`, `Mother's qualification`, `Father's occupation`, `GDP`, `Inflation rate`, `Previous qualification`, `Marital status` 등 |
+| **제거 컬럼 (6)** | 6 | `Course`, `Educational special needs`, `Father's qualification`, `International`, `Nacionality`, `Unemployment rate` |
 
 > **제거 사유:**  
 > - 개인 특성과 상관이 낮은 외부 변수(`Unemployment rate`, `Nacionality`)  
