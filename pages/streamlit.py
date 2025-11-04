@@ -16,7 +16,7 @@ from sklearn.preprocessing import OneHotEncoder
 
 ROOT_DIR = Path(__file__).resolve().parent.parent
 MODEL_PATH = ROOT_DIR / 'model' / 'model_trained.pkl'
-DATASET_PATH = ROOT_DIR / 'data' / 'preprocessed' / 'dataset_preprocessed.csv'
+DATASET_PATH = ROOT_DIR / 'data' / 'raw' / 'dataset.csv'
 
 
 def unwrap_estimator(estimator: Any) -> Any:
@@ -444,15 +444,27 @@ def load_metadata():
             }
             if 'Target' in dataset_df.columns:
                 target_counts_series = dataset_df['Target'].value_counts(dropna=False)
-                target_counts: Dict[str, int] = {
-                    str(index): int(count) for index, count in target_counts_series.items()
-                }
+                # Target이 숫자(0, 1)인 경우 문자열로 변환
+                target_counts: Dict[str, int] = {}
+                for index, count in target_counts_series.items():
+                    if index == 0 or index == '0':
+                        target_counts['Dropout'] = int(count)
+                    elif index == 1 or index == '1':
+                        target_counts['Graduate'] = int(count)
+                    elif index == 2 or index == '2' or str(index).lower() == 'enrolled':
+                        target_counts['Enrolled'] = int(count)
+                    else:
+                        target_counts[str(index)] = int(count)
+                
                 dataset_summary['target_counts'] = target_counts
                 total_count = sum(target_counts.values())
                 if total_count > 0:
                     dataset_summary['dropout_ratio'] = target_counts.get('Dropout', 0) / total_count
                     dataset_summary['graduate_ratio'] = target_counts.get('Graduate', 0) / total_count
-        except Exception:
+        except Exception as e:
+            print(f"DEBUG - Error loading dataset: {e}")
+            import traceback
+            traceback.print_exc()
             dataset_modes = {}
             numeric_bounds = {}
             dataset_summary = {}
