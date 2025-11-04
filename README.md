@@ -10,38 +10,39 @@
 
 <table>
   <tr>
-    <td valign="top" align="center" width="180">
-      <img src="./img/final_squid.png" width="100"><br>
+    <td valign="top" align="center" width="200">
+      <img src="./img/final_squid.png" width="110"><br>
       <b>김황현</b><br>
       팀장 / 데이터 엔지니어<br>
       <sub>전체 프로젝트 기획<br>파이프라인 설계 및 모델링 전략 수립</sub>
     </td>
-    <td valign="top" align="center" width="180">
-      <img src="./img/final_ddoong.png" width="100"><br>
+    <td valign="top" align="center" width="200">
+      <img src="./img/final_ddoong.png" width="110"><br>
       <b>이도경</b><br>
       머신러닝 담당<br>
       <sub>EDA, 전처리 및 변수 중요도 분석<br>피처 엔지니어링</sub>
     </td>
-    <td valign="top" align="center" width="180">
-      <img src="./img/final_snail.png" width="100"><br>
+    <td valign="top" align="center" width="200">
+      <img src="./img/final_snail.png" width="110"><br>
       <b>이지은</b><br>
       데이터 분석 담당<br>
       <sub>모델 학습 및 튜닝<br>성능 평가, 시각화 보고서 제작</sub>
     </td>
-    <td valign="top" align="center" width="180">
-      <img src="./img/haepari.png" width="100"><br>
+    <td valign="top" align="center" width="200">
+      <img src="./img/haepari.png" width="110"><br>
       <b>정소영</b><br>
       머신러닝 담당<br>
       <sub>데이터 전처리<br>모델링 전략 수립</sub>
     </td>
-    <td valign="top" align="center" width="180">
-      <img src="./img/final_squirral.png" width="100"><br>
+    <td valign="top" align="center" width="200">
+      <img src="./img/final_squirral.png" width="110"><br>
       <b>최유정</b><br>
       데이터 엔지니어 / UI<br>
       <sub>EDA, 데이터 전처리<br>Streamlit 화면 설계, GitHub 관리</sub>
     </td>
   </tr>
 </table>
+
 
 
 🔗 **GitHub Repository**: [SKNETWORKS-FAMILY-AICAMP / SKN20-2nd-4TEAM](https://github.com/SKNETWORKS-FAMILY-AICAMP/SKN20-2nd-4TEAM)
@@ -252,7 +253,7 @@
 | 이도경 | 활용할 데이터를 찾기가 쉽지가 않아서 어떻게 해야하나 걱정이 많았는데, 다행히 좋은 데이터를 찾고 팀원분들과 함께 노력하여 잘 마무리할 수 있어서 뿌듯했습니다. 딥러닝 시간에 배웠던 다양한 모델들을 직접 적용해보고, 관련 데이터를 수집하며 학습했던 내용을 실제로 적용해볼 수 있어 좋았습니다. 여전히 많이 부족하지만 이번 팀 프로젝트로 한층 더 성장할 수 있게 된 거 같아 기쁩니다. 함께 해주신 조원분들 정말 고생 많으셨고 감사합니다! |
 | 이지은 | 활용할 데이터를 찾기가 쉽지가 않아서 어떻게 해야하나 걱정이 많았는데, 다행히 좋은 데이터를 찾고 팀원분들과 함께 노력하여 잘 마무리할 수 있어서 뿌듯했습니다. 딥러닝 시간에 배웠던 다양한 모델들을 직접 적용해보고, 관련 데이터를 수집하며 학습했던 내용을 실제로 적용해볼 수 있어 좋았습니다. 여전히 많이 부족하지만 이번 팀 프로젝트로 한층 더 성장할 수 있게 된 거 같아 기쁩니다. 함께 해주신 조원분들 정말 고생 많으셨고 감사합니다! |
 | 정소영 | 데이터 전처리부터 머신러닝·딥러닝 모델 실험까지 진행하며, 직접 F1 스코어가 나왔을 때의 뿌듯함이 아직도 기억납니다. 주제를 조금 더 빨리 정했다면 더 깊게 탐구할 수 있지 않았을까 하는 아쉬움도 있지만, 멋진 팀원분들 덕분에 훌륭한 결과물을 낼 수 있었다고 생각합니다. 다들 정말 고생 많으셨습니다! |
-| 최유정 | 너무 고생했어요 우리♡!! 이번 프로젝트를 통해 실제 데이터를 바탕으로 학생 이탈 예측 모델을 성공적으로 구현했으며, 데이터 분석부터 웹 서비스 구현까지 머신러닝 파이프라인 전반을 경험할 수 있었습니다. 특히, 팀원들의 적극적인 협업 덕분에 데이터셋 찾는 난관을 극복하고 기대 이상의 완성도 높은 결과물을 만들어낼 수 있었던 것 같습니다! |
+| 최유정 | 너무 고생하셨습니다 ♡!! 이번 프로젝트를 통해 실제 데이터를 바탕으로 학생 이탈 예측 모델을 성공적으로 구현했으며, 데이터 분석부터 웹 서비스 구현까지 머신러닝 파이프라인 전반을 경험할 수 있었습니다. 특히, 팀원들의 적극적인 협업 덕분에 데이터셋 찾는 난관을 극복하고 기대 이상의 완성도 높은 결과물을 만들어낼 수 있었던 것 같습니다! |
 
 ---
 
