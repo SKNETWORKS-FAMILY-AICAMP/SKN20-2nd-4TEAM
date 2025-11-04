@@ -184,8 +184,8 @@
 
 ---
 
-## 🗂️ 프로젝트 구조  
-
+<h2>🗂️ 프로젝트 구조</h2>
+<pre>
 SKN20-2nd-4TEAM
 │
 ├── 01_preprocessing_report/
@@ -215,3 +215,5 @@ SKN20-2nd-4TEAM
 ├── only_test_streamlit_guidance.txt
 ├── 2차 프로젝트 발표자료.pdf
 └── README.md
+</pre>
+
