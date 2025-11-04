@@ -204,19 +204,45 @@
 
 ---
 
-## 💻 Streamlit 웹 서비스  
+## 💻 Streamlit 구현  
 
+> 머신러닝 모델을 기반으로 학생 개별 데이터를 입력받아 **이탈 확률을 예측**하고,  
+> 예측 결과를 시각적으로 표시하는 웹 애플리케이션입니다.  
+
+---
+
+### 🎯 주요 기능  
+- 학생 정보 입력 시 **Dropout 확률 실시간 예측**  
+- **Low / Medium / High Risk** 단계별 위험도 시각화  
+- 주요 **Feature Importance 및 입력 데이터 분석 결과** 표시  
+- 사용 가이드를 포함한 **대시보드형 UI 구성**  
+- Streamlit 기반 **실시간 상호작용형 분석 시스템**
+
+---
+
+### 🖥️ 서비스 화면
+
+#### 1️⃣ 메인 대시보드  
 <p align="center">
-  <img src="./images/streamlit_ui.png" width="600">
+  <img src="./img/streamlit1.png" width="900"><br>
+  <sub>학생 이탈 예측 시스템 메인 페이지 — 학습 데이터 통계 및 입력 가이드</sub>
 </p>
 
-- 학생 정보 입력 시 Dropout 확률을 실시간으로 예측  
-- 예측 확률에 따라 **Low / Medium / High Risk**로 자동 분류  
-- 주요 변수 중요도(Feature Importance) 시각화  
-- 불필요한 변수는 `only_test_streamlit_guidance.txt` 기준으로 UI에서 비활성화  
+---
 
-📺 **시연 영상:** (추후 업로드 예정)  
-📷 **UI 예시:** (추후 업로드 예정)
+#### 2️⃣ 데이터 인사이트 페이지  
+<p align="center">
+  <img src="./img/streamlit2.png" width="900"><br>
+  <sub>데이터 분포, 주요 변수 범위 및 모델 특징 요약을 제공</sub>
+</p>
+
+---
+
+#### 3️⃣ 예측 결과 페이지  
+<p align="center">
+  <img src="./img/streamlit3.png" width="900"><br>
+  <sub>입력값 기반 예측 결과 — Dropout vs Graduate 확률 시각화</sub>
+</p>
 
 ---
 
