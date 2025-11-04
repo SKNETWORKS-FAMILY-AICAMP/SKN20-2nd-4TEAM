@@ -1,0 +1,23 @@
+# --- auto-generated guidance ---
+FEATURES_TO_HIDE = [
+  "Application order",
+  "Curricular units 1st sem (credited)",
+  "Curricular units 1st sem (enrolled)",
+  "Curricular units 1st sem (evaluations)",
+  "Curricular units 1st sem (without evaluations)",
+  "Curricular units 2nd sem (credited)",
+  "Curricular units 2nd sem (enrolled)",
+  "Curricular units 2nd sem (evaluations)",
+  "Curricular units 2nd sem (without evaluations)",
+  "Daytime/evening attendance",
+  "Displaced",
+  "Father's occupation",
+  "GDP",
+  "Inflation rate",
+  "Marital status",
+  "Mother's occupation",
+  "Mother's qualification",
+  "Previous qualification"
+]
+
+# Apply these defaults in Streamlit to avoid rendering inputs for the listed features.
