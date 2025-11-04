@@ -185,31 +185,32 @@
 ---
 
 ## 🗂️ 프로젝트 구조  
+
 SKN20-2nd-4TEAM
 │
 ├── 01_preprocessing_report/
-│ └── Students'_EDA
+│   └── Students'_EDA
 │
 ├── 02_training_report/
-│ ├── project.ipynb
-│ └── data/
-│ └── dataset.csv
+│   ├── project.ipynb
+│   └── data/
+│       └── dataset.csv
 │
 ├── 03_trained_model/
-│ ├── model_trained.pkl
-│ └── feature_importance.png
+│   ├── model_trained.pkl
+│   └── feature_importance.png
 │
 ├── images/
-│ ├── heatmap_all_image.png
-│ ├── heatmap_later.png
-│ ├── streamlit_ui.png
-│ └── delete_column.png
+│   ├── heatmap_all_image.png
+│   ├── heatmap_later.png
+│   ├── streamlit_ui.png
+│   └── delete_column.png
 │
 ├── app.py
 │
 ├── pages/
-│ ├── input_form.py
-│ └── result.py
+│   ├── input_form.py
+│   └── result.py
 │
 ├── only_test_streamlit_guidance.txt
 ├── 2차 프로젝트 발표자료.pdf
