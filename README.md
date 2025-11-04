@@ -91,7 +91,7 @@
 
 ### 3-1. 상관행렬 (Heatmap)
 <p align="center">
-  <img src="./img/heatmap_all_image.png" width="800">
+  <img src="./figures/correlation_heatmap_full.png" width="800">
 </p>
 
 > Spearman 상관계수를 기반으로 변수 간 관계를 분석했습니다.  
@@ -102,7 +102,7 @@
 
 ### 3-2. 불필요 컬럼 제거 및 재확인
 <p align="center">
-  <img src="./img/heatmap_later.png" width="800">
+  <img src="./figures/correlation_heatmap_top.png" width="800">
 </p>
 
 > `Course`, `Unemployment rate`, `Educational special needs` 등 학업 성취와 직접 관련이 낮은 변수는 제거.  
