@@ -86,11 +86,9 @@
 | 6️⃣ 불균형 데이터 대응 | `class_weight='balanced'` + `SMOTE` 적용 |
 
 ---
+## 📊 탐색적 데이터 분석 (EDA)
 
-## 3. 📊 탐색적 데이터 분석 (EDA)
-## 3. 📊 탐색적 데이터 분석 (EDA)
-
-### 3-1. 전체 상관 행렬 (Full Correlation Heatmap)
+### 1. 전체 상관 행렬 (Full Correlation Heatmap)
 <p align="center">
   <img src="./figures/correlation_heatmap_full.png" width="800">
 </p>
@@ -101,7 +99,7 @@
 
 ---
 
-### 3-2. 주요 변수 중심 상관 행렬 (Top Features Heatmap)
+### 2. 주요 변수 중심 상관 행렬 (Top Features Heatmap)
 <p align="center">
   <img src="./figures/correlation_heatmap_top.png" width="800">
 </p>
@@ -111,7 +109,7 @@
 
 ---
 
-### 3-3. 타깃별 수치형 변수 분포 (Numeric Distribution by Target)
+### 3. 타깃별 수치형 변수 분포 (Numeric Distribution by Target)
 <p align="center">
   <img src="./figures/numeric_distribution_by_target.png" width="800">
 </p>
@@ -121,7 +119,7 @@
 
 ---
 
-### 3-4. 수치형 변수 히스토그램 (Numeric Histogram by Target)
+### 4. 수치형 변수 히스토그램 (Numeric Histogram by Target)
 <p align="center">
   <img src="./figures/numeric_histogram_by_target.png" width="800">
 </p>
@@ -131,7 +129,7 @@
 
 ---
 
-### 3-5. 타깃 상관 변수 바그래프 (Target Correlation Bar)
+### 5. 타깃 상관 변수 바그래프 (Target Correlation Bar)
 <p align="center">
   <img src="./figures/target_correlation_bar.png" width="800">
 </p>
@@ -142,7 +140,7 @@
 
 ---
 
-### 3-6. 타깃 분포 (Target Distribution)
+### 6. 타깃 분포 (Target Distribution)
 <p align="center">
   <img src="./figures/target_distribution.png" width="600">
 </p>
@@ -153,7 +151,7 @@
 ### 사용 컬럼 요약  
 
 | 구분 | 컬럼 수 | 컬럼명 |
-|------|----------|--------|
+|----------|----------|--------|
 | ✅ **사용 컬럼 (28)** | 28 | `Age at enrollment`, `Application mode`, `Application order`, `Curricular units 1st/2nd sem (approved, grade, enrolled, evaluations...)`, `Daytime/evening attendance`, `Debtor`, `Displaced`, `Gender`, `Scholarship holder`, `Tuition fees up to date`, `Mother's qualification`, `Father's occupation`, `GDP`, `Inflation rate`, `Previous qualification`, `Marital status` 등 |
 | ❌ **제거 컬럼 (6)** | 6 | `Course`, `Educational special needs`, `Father's qualification`, `International`, `Nacionality`, `Unemployment rate` |
 
