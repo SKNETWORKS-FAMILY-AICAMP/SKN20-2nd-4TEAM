@@ -635,14 +635,14 @@ st.markdown(
     div[data-testid="stForm"] button[kind="primary"],
     #tabs-bui2-tabpanel-0 .st-key-FormSubmitter-prediction_form----------- button,
     .st-key-FormSubmitter-prediction_form----------- button {
-        background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%) !important;
+        background: linear-gradient(135deg, #86efac 0%, #4ade80 100%) !important;
         border: none !important;
         color: white !important;
         font-size: 1.4rem !important;
         font-weight: 800 !important;
         padding: 1.2rem 2.5rem !important;
         border-radius: 16px !important;
-        box-shadow: 0 10px 25px rgba(245, 158, 11, 0.5) !important;
+        box-shadow: 0 10px 25px rgba(74, 222, 128, 0.5) !important;
         transition: all 0.3s ease !important;
         height: auto !important;
         min-height: 4rem !important;
@@ -651,9 +651,9 @@ st.markdown(
     div[data-testid="stForm"] button[kind="primary"]:hover:not(:disabled),
     #tabs-bui2-tabpanel-0 .st-key-FormSubmitter-prediction_form----------- button:hover:not(:disabled),
     .st-key-FormSubmitter-prediction_form----------- button:hover:not(:disabled) {
-        background: linear-gradient(135deg, #d97706 0%, #b45309 100%) !important;
+        background: linear-gradient(135deg, #4ade80 0%, #22c55e 100%) !important;
         transform: translateY(-3px) scale(1.02) !important;
-        box-shadow: 0 15px 35px rgba(245, 158, 11, 0.6) !important;
+        box-shadow: 0 15px 35px rgba(74, 222, 128, 0.6) !important;
     }
     div[data-testid="stForm"] button[kind="primary"]:disabled,
     #tabs-bui2-tabpanel-0 .st-key-FormSubmitter-prediction_form----------- button:disabled,
