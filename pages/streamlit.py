@@ -834,31 +834,59 @@ with tab_predict:
         if display_numeric_cols:
             st.markdown('---')
             st.markdown('#### 📊 학업 성적 정보')
-            st.caption('학생의 성적 및 학업 관련 정보를 입력하세요')
+            st.caption('학생의 성적 및 학업 관련 정보를 입력하세요 (각 항목의 유효 범위 내에서 입력)')
             numeric_layout = st.columns(max(1, min(len(display_numeric_cols), 3)))
             for idx, column in enumerate(display_numeric_cols):
                 default_config = numeric_defaults.get(column, {'value': 0.0, 'step': 0.1})
-                default_value = default_config['value']
-                step_value = default_config['step']
-                placeholder_text = None
+                raw_default = default_config['value']
+                raw_step = default_config['step']
+                
+                # 최소/최대값 설정
+                min_value = None
+                max_value = None
+                help_text = None
                 min_max = numeric_bounds.get(column)
+                
+                # 학업 성적 정보 영역은 전부 정수형으로 처리
+                is_integer_type = True
+                
                 if min_max is not None:
                     lower, upper = min_max
                     if lower is not None and upper is not None:
                         try:
-                            lower_int = int(float(lower))
-                            upper_int = int(float(upper))
-                            placeholder_text = f"{lower_int} ~ {upper_int}"
+                            min_value = int(float(lower))
+                            max_value = int(float(upper))
+                            help_text = f"⚠️ 유효 범위: {min_value} ~ {max_value}"
                         except (TypeError, ValueError):
-                            placeholder_text = None
+                            pass
+                
                 with numeric_layout[idx % len(numeric_layout)]:
-                    number_kwargs: Dict[str, Any] = {
-                        'label': get_field_label(column),
-                        'value': default_value,
-                        'step': step_value,
-                    }
-                    if placeholder_text is not None:
-                        number_kwargs['placeholder'] = placeholder_text
+                    if is_integer_type:
+                        # 정수형 입력
+                        number_kwargs: Dict[str, Any] = {
+                            'label': get_field_label(column),
+                            'value': int(raw_default),
+                            'step': 1,
+                        }
+                        if min_value is not None:
+                            number_kwargs['min_value'] = min_value
+                        if max_value is not None:
+                            number_kwargs['max_value'] = max_value
+                    else:
+                        # 실수형 입력
+                        number_kwargs: Dict[str, Any] = {
+                            'label': get_field_label(column),
+                            'value': float(raw_default),
+                            'step': float(raw_step),
+                        }
+                        if min_value is not None:
+                            number_kwargs['min_value'] = float(min_value)
+                        if max_value is not None:
+                            number_kwargs['max_value'] = float(max_value)
+                    
+                    if help_text is not None:
+                        number_kwargs['help'] = help_text
+                    
                     value = st.number_input(**number_kwargs)
                 input_data[column] = value
 
@@ -903,8 +931,66 @@ with tab_predict:
             if hidden_feature in feature_cols and hidden_feature not in input_data:
                 input_data[hidden_feature] = auto_fill_values.get(hidden_feature)
 
+        # 입력값 검증
         st.markdown('---')
-        submitted = st.form_submit_button('🚀 예측 시작하기', use_container_width=True, type='primary')
+        validation_errors = []
+        
+        for column in display_numeric_cols:
+            value = input_data.get(column)
+            if value is None:
+                continue
+                
+            min_max = numeric_bounds.get(column)
+            if min_max is not None:
+                lower, upper = min_max
+                if lower is not None and upper is not None:
+                    try:
+                        min_val = float(lower)
+                        max_val = float(upper)
+                        
+                        if value < min_val or value > max_val:
+                            validation_errors.append({
+                                'column': column,
+                                'label': get_field_label(column),
+                                'value': value,
+                                'min': min_val,
+                                'max': max_val
+                            })
+                    except (TypeError, ValueError):
+                        pass
+        
+        # 검증 결과 표시
+        if validation_errors:
+            st.error('❌ **입력값 오류가 발견되었습니다!**')
+            st.markdown('**다음 항목들을 수정해주세요:**')
+            
+            for error in validation_errors:
+                st.markdown(
+                    f"""
+                    <div style="background: #fee2e2; padding: 1rem; border-radius: 8px; 
+                                margin: 0.5rem 0; border-left: 4px solid #ef4444;">
+                        <strong style="color: #991b1b;">📍 {error['label']}</strong><br/>
+                        <span style="color: #7f1d1d;">
+                            입력값: <strong>{error['value']:.2f}</strong><br/>
+                            유효 범위: <strong>{error['min']:.1f} ~ {error['max']:.1f}</strong>
+                        </span>
+                    </div>
+                    """,
+                    unsafe_allow_html=True
+                )
+            
+            st.warning('⚠️ 위 항목들을 유효 범위 내로 수정한 후 다시 시도해주세요.')
+        else:
+            if display_numeric_cols:
+                st.success('✅ 모든 입력값이 유효합니다!')
+        
+        # Submit 버튼은 항상 생성 (조건부로 비활성화)
+        submitted = st.form_submit_button(
+            '🚀 예측 시작하기', 
+            use_container_width=True, 
+            type='primary',
+            disabled=len(validation_errors) > 0
+        )
 
     if submitted:
         try:
