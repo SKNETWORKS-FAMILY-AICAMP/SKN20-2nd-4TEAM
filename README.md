@@ -29,8 +29,8 @@
     <td align="center">
       <img src="./img/haepari.png" width="100"><br>
       <b>정소영</b><br>
-      딥러닝 담당<br>
-      <sub>신경망 설계, 딥러닝 모델 구현 및 성능 비교</sub>
+      머신러닝 담당<br>
+      <sub>데이터 전처리, 모델 학습 및 튜닝, 성능 평가, 피처 엔지니어링</sub>
     </td>
     <td align="center">
       <img src="./img/final_squirral.png" width="100"><br>
@@ -115,7 +115,7 @@
 | 모델링 | ![RandomForest](https://img.shields.io/badge/RandomForest-228B22?style=for-the-badge&logo=scikitlearn&logoColor=white) ![Scikit-learn](https://img.shields.io/badge/Scikit--learn-F7931E?style=for-the-badge&logo=scikitlearn&logoColor=white) ![PyTorch](https://img.shields.io/badge/PyTorch-EE4C2C?style=for-the-badge&logo=pytorch&logoColor=white) |
 | 시각화 | ![Matplotlib](https://img.shields.io/badge/Matplotlib-003049?style=for-the-badge&logo=plotly&logoColor=white) ![Seaborn](https://img.shields.io/badge/Seaborn-3776AB?style=for-the-badge&logo=python&logoColor=white) |
 | 웹 | ![Streamlit](https://img.shields.io/badge/Streamlit-FF4B4B?style=for-the-badge&logo=streamlit&logoColor=white) |
-| 협업 | ![GitHub](https://img.shields.io/badge/GitHub-181717?style=for-the-badge&logo=github&logoColor=white) ![Notion](https://img.shields.io/badge/Notion-000000?style=for-the-badge&logo=notion&logoColor=white) ![Discord](https://img.shields.io/badge/Discord-5865F2?style=for-the-badge&logo=discord&logoColor=white) |
+| 협업 | ![GitHub](https://img.shields.io/badge/GitHub-181717?style=for-the-badge&logo=github&logoColor=white) ![Discord](https://img.shields.io/badge/Discord-5865F2?style=for-the-badge&logo=discord&logoColor=white) |
 
 
 
