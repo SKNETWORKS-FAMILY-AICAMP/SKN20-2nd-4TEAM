@@ -35,7 +35,7 @@
     <td align="center">
       <img src="./img/final_squirral.png" width="100"><br>
       <b>최유정</b><br>
-      데이터 엔지니어, 프론트엔드/UI<br>
+      데이터 엔지니어/UI<br>
       <sub>EDA, 데이터 전처리, Streamlit 화면 설계, GitHub 관리</sub>
     </td>
   </tr>
