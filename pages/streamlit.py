@@ -1008,6 +1008,9 @@ with tab_predict:
                 dropout_prob = float(probabilities[0])
                 graduate_prob = float(probabilities[1])
 
+            # 스크롤 타겟 앵커
+            st.markdown('<div id="prediction-result-anchor"></div>', unsafe_allow_html=True)
+            
             st.success('✨ 예측이 완료되었습니다!')
             
             # 예측 결과 결정
@@ -1020,8 +1023,12 @@ with tab_predict:
                 else '학생이 졸업할 가능성이 더 높게 예측되었습니다.'
             )
             
-            # 예측 결과 헤더
-            st.markdown(
+            # 예측 결과를 컨테이너로 감싸서 레이아웃 shift 방지
+            result_container = st.container()
+            
+            with result_container:
+                # 예측 결과 헤더
+                st.markdown(
                 f"""
                 <div style="background: linear-gradient(135deg, {badge_color}15, {badge_color}25); 
                             padding: 2rem; border-radius: 20px; text-align: center; 
@@ -1225,26 +1232,110 @@ with tab_predict:
                     - 학업 목표를 향해 꾸준히 나아가세요
                     """
                 )
-
-            with st.expander('📋 입력한 데이터 확인하기', expanded=False):
-                st.json(json.dumps(input_data, ensure_ascii=False, indent=2))
+                
+                with st.expander('📋 입력한 데이터 확인하기', expanded=False):
+                    st.json(json.dumps(input_data, ensure_ascii=False, indent=2))
+            
+            # 더 강력한 스크롤 - 즉시 실행 + DOM 탐색 강화
+            import streamlit.components.v1 as components
+            scroll_script = """
+                <script>
+                    // 즉시 실행 함수
+                    (function() {
+                        let attempts = 0;
+                        const maxAttempts = 30;
+                        
+                        function performScroll() {
+                            attempts++;
+                            console.log('Scroll attempt:', attempts);
+                            
+                            try {
+                                const parent = window.parent;
+                                if (!parent || !parent.document) {
+                                    console.log('Parent not available');
+                                    return false;
+                                }
+                                
+                                // 앵커 찾기
+                                // 정확한 타겟 요소 찾기
+                                const targetElement = parent.document.querySelector('#tabs-bui2-tabpanel-0 > div > div:nth-child(4)');
+                                
+                                if (!targetElement) {
+                                    console.log('Target element not found yet');
+                                    return false;
+                                }
+                                
+                                console.log('Target element found!', targetElement);
+                                
+                                const offset = -60;  // 60픽셀 위로
+                                
+                                // 방법 1: scrollIntoView로 정확하게 화면 최상단에 배치
+                                targetElement.scrollIntoView({ 
+                                    behavior: 'smooth', 
+                                    block: 'start',  // 화면 최상단에 정확히 배치
+                                    inline: 'nearest'
+                                });
+                                
+                                // 방법 2: 모든 스크롤 가능한 부모 찾아서 부드럽게 스크롤
+                                let element = targetElement;
+                                while (element && element !== parent.document.body) {
+                                    if (element.scrollHeight > element.clientHeight) {
+                                        console.log('Scrolling element:', element);
+                                        const rect = targetElement.getBoundingClientRect();
+                                        const elementRect = element.getBoundingClientRect();
+                                        const targetPosition = rect.top - elementRect.top + element.scrollTop + offset;
+                                        
+                                        // 부드러운 스크롤 적용 (60px 아래로)
+                                        element.scrollTo({
+                                            top: targetPosition,
+                                            behavior: 'smooth'
+                                        });
+                                    }
+                                    element = element.parentElement;
+                                }
+                                
+                                // 방법 3: 특정 컨테이너 직접 스크롤 (부드럽게)
+                                const mainContainer = parent.document.querySelector('[data-testid="stAppViewContainer"]');
+                                if (mainContainer) {
+                                    console.log('Main container found');
+                                    const targetTop = targetElement.getBoundingClientRect().top;
+                                    const containerTop = mainContainer.getBoundingClientRect().top;
+                                    const targetScroll = mainContainer.scrollTop + (targetTop - containerTop) + offset;
+                                    
+                                    mainContainer.scrollTo({
+                                        top: targetScroll,
+                                        behavior: 'smooth'
+                                    });
+                                }
+                                
+                                // 방법 4: window 스크롤 (부드럽게)
+                                const rect = targetElement.getBoundingClientRect();
+                                parent.window.scrollBy({
+                                    top: rect.top + offset,
+                                    behavior: 'smooth'
+                                });
+                                
+                                console.log('Scroll executed successfully');
+                                return true;
+                                
+                            } catch (e) {
+                                console.error('Scroll error:', e);
+                                return false;
+                            }
+                        }
+                        
+                        // 예측 결과 렌더링 시작 후 빠르게 스크롤
+                        // 레이아웃 변화가 최소화되어 짧은 대기 시간으로 충분
+                        setTimeout(() => {
+                            // 한 번만 깔끔하게 스크롤
+                            performScroll();
+                        }, 300);  // 0.3초 대기 - 빠른 반응
+                    })();
+                </script>
+            """
+            components.html(scroll_script, height=0)
         except Exception as exc:
             st.error(f'❌ 예측 중 오류가 발생했습니다: {exc}')
-    else:
-        st.markdown(
-            """
-            <div style="background: linear-gradient(135deg, #dbeafe, #bfdbfe); 
-                        padding: 2rem; border-radius: 16px; text-align: center;
-                        border: 2px solid #3b82f6;">
-                <h3 style="color: #1e40af; margin-bottom: 1rem;">� 시작해볼까요?</h3>
-                <p style="color: #1e40af; font-size: 1.1rem; margin: 0;">
-                    위에서 학생 정보를 입력하고<br/>
-                    <strong>"🚀 예측 시작하기"</strong> 버튼을 눌러주세요!
-                </p>
-            </div>
-            """,
-            unsafe_allow_html=True
-        )
 
 with tab_feature:
     st.markdown('### 📖 입력 항목 가이드')
