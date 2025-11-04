@@ -1,3 +1,4 @@
+![팀명 소개](https://capsule-render.vercel.app/api?type=waving&color=gradient&height=200&section=header&text=Drop%20Signal%20Detector&fontSize=60)
 # SKN20-2nd-4TEAM  
 # 🎓 학생 학업 중도 이탈률 예측 프로젝트  
 
