@@ -224,7 +224,7 @@
 
 #### 1️⃣ 메인 대시보드  
 <p align="center">
-  <img src="./images/streamlit1.png" width="900"><br>
+  <img src="./img/streamlit1.png" width="900"><br>
   <sub>학생 이탈 예측 시스템 메인 페이지 — 학습 데이터 통계 및 입력 가이드</sub>
 </p>
 
@@ -232,7 +232,7 @@
 
 #### 2️⃣ 데이터 인사이트 페이지  
 <p align="center">
-  <img src="./images/streamlit2.png" width="900"><br>
+  <img src="./img/streamlit2.png" width="900"><br>
   <sub>데이터 분포, 주요 변수 범위 및 모델 특징 요약을 제공</sub>
 </p>
 
@@ -240,7 +240,7 @@
 
 #### 3️⃣ 예측 결과 페이지  
 <p align="center">
-  <img src="./images/streamlit3.png" width="900"><br>
+  <img src="./img/streamlit3.png" width="900"><br>
   <sub>입력값 기반 예측 결과 — Dropout vs Graduate 확률 시각화</sub>
 </p>
 
