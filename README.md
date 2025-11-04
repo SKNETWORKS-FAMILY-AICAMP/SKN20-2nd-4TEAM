@@ -17,25 +17,25 @@
     <td align="center">
       <img src="./img/final_ddoong.png" width="100"><br>
       <b>이도경</b><br>
-      데이터 분석 담당<br>
-      <sub>EDA, 전처리 및 변수 중요도 분석, 시각화 보고서 제작</sub>
+      머신러닝 담당<br>
+      <sub>EDA, 전처리 및 변수 중요도 분석, 피처 엔지니어링</sub>
     </td>
     <td align="center">
       <img src="./img/final_snail.png" width="100"><br>
       <b>이지은</b><br>
-      머신러닝 담당<br>
-      <sub>모델 학습 및 튜닝, 성능 평가, 피처 엔지니어링</sub>
+      데이터 분석 담당<br>
+      <sub>모델 학습 및 튜닝, 성능 평가, 시각화 보고서 제작</sub>
     </td>
     <td align="center">
       <img src="./img/haepari.png" width="100"><br>
       <b>정소영</b><br>
       머신러닝 담당<br>
-      <sub>데이터 전처리, 모델 학습 및 튜닝, 성능 평가, 피처 엔지니어링</sub>
+      <sub>데이터 전처리, 모델링 전략 수립</sub>
     </td>
     <td align="center">
       <img src="./img/final_squirral.png" width="100"><br>
       <b>최유정</b><br>
-      프론트엔드/UI<br>
+      데이터 엔지니어, 프론트엔드/UI<br>
       <sub>EDA, 데이터 전처리, Streamlit 화면 설계, GitHub 관리</sub>
     </td>
   </tr>
@@ -49,16 +49,16 @@
 | 작업 명 | 담당자 | 산출물 |
 |----------|---------|---------|
 | 프로젝트 주제 및 데이터 선정 | 김황현, 이도경, 이지은, 정소영, 최유정 | 없음 |
-| 데이터 수집 및 전처리 | 이도경, 최유정 | CSV 병합, 결측치 처리, 이상치 점검 코드 |
-| EDA 수행 및 시각화 | 이도경 | 상관행렬 Heatmap, 변수 분포 그래프, EDA 마크다운 보고서 |
-| 피처 엔지니어링 및 변수 선택 | 김황현, 이지은 | Feature Importance, 변수 선택 코드 |
-| 머신러닝 모델링 (Logistic, RandomForest, LightGBM) | 김황현, 이지은 | 학습 코드, 성능 비교 리포트 |
-| 딥러닝 모델링 (MLP) | 정소영 | PyTorch MLP 코드, 학습 결과 로그 |
-| 모델 성능 평가 및 비교 | 김황현, 이지은, 정소영 | F1, AUC 지표, Confusion Matrix |
-| Streamlit 웹 구현 | 최유정 | Streamlit UI 코드, `app.py`, 페이지별 구성 |
-| Streamlit 기능 통합 및 테스트 | 김황현, 최유정 | 실시간 예측 테스트, 결과 시각화 |
-| README.md 작성 및 프로젝트 구조 정리 | 최유정 | GitHub README.md, 폴더 구조 정리 |
-| 발표자료 제작 (PPT / PDF) | 김황현, 정소영 | 2차 프로젝트 발표자료.pdf |
+| 데이터 수집 및 전처리 | 정소영, 이도경, 최유정 | 전처리 코드, 이상치/결측치 처리 보고서 |
+| 탐색적 데이터 분석 (EDA) | 이도경, 최유정 | Heatmap, 변수 상관분석 결과, EDA 마크다운 보고서 |
+| 피처 엔지니어링 및 변수 선택 | 이도경, 이지은 | Feature Importance, 변수 선정 코드 |
+| 머신러닝 모델링 (Logistic, RandomForest, LightGBM) | 김황현, 정소영 | 모델 학습 코드, 파이프라인 설계, 성능 비교 결과 |
+| 모델 성능 평가 및 튜닝 | 이지은, 김황현 | F1, AUC, Confusion Matrix, 최적화 결과 |
+| 딥러닝 모델링 (MLP) | 이도경 | PyTorch MLP 학습 코드 및 실험 결과 |
+| Streamlit 웹 구현 | 이도경, 최유정 | Streamlit UI 코드, `app.py`, 페이지별 구성 |
+| Streamlit 통합 및 테스트 | 김황현, 최유정 | 실시간 예측 테스트 결과, UI 동작 점검 |
+| README.md 작성 및 프로젝트 구조 정리 | 최유정 | GitHub README.md, 프로젝트 폴더 구조 |
+| 발표자료 제작 (PPT / PDF) | 최유정 | `2차 프로젝트 발표자료.pdf`, Canva 시각자료 |
 | 최종 점검 및 회고 작성 | 전원 | 회고 섹션, 기술 블로그 초안 |
 
 ---
