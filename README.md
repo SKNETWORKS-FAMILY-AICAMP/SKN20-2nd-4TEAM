@@ -88,29 +88,69 @@
 ---
 
 ## 3. 📊 탐색적 데이터 분석 (EDA)
+## 3. 📊 탐색적 데이터 분석 (EDA)
 
-### 3-1. 상관행렬 (Heatmap)
+### 3-1. 전체 상관 행렬 (Full Correlation Heatmap)
 <p align="center">
   <img src="./figures/correlation_heatmap_full.png" width="800">
 </p>
 
 > Spearman 상관계수를 기반으로 변수 간 관계를 분석했습니다.  
-> `Curricular units`(학업 성취 변수)들이 상호 강한 양의 상관을 보였고,  
-> `Debtor`, `Tuition fees up to date`, `Scholarship holder` 등 재정 요인이 이탈과 높은 음의 상관을 보였습니다.
+> `Curricular units`(학업 성취 관련 변수) 간 강한 양의 상관을 보였으며,  
+> `Debtor`, `Tuition fees up to date`, `Scholarship holder` 등 재정 요인은 Dropout과 음의 상관을 보였습니다.
 
 ---
 
-### 3-2. 불필요 컬럼 제거 및 재확인
+### 3-2. 주요 변수 중심 상관 행렬 (Top Features Heatmap)
 <p align="center">
   <img src="./figures/correlation_heatmap_top.png" width="800">
 </p>
 
-> `Course`, `Unemployment rate`, `Educational special needs` 등 학업 성취와 직접 관련이 낮은 변수는 제거.  
-> 이후 상관 구조를 재확인한 결과, 주요 학업 변수 중심으로 정제된 데이터셋이 완성되었습니다.
+> 학업 성취도 및 재정 요인 중심으로 주요 상관 변수를 시각화했습니다.  
+> Dropout 예측에 특히 기여하는 핵심 변수군을 도출했습니다.
 
 ---
 
-### 3-3. 사용 컬럼 요약  
+### 3-3. 타깃별 수치형 변수 분포 (Numeric Distribution by Target)
+<p align="center">
+  <img src="./figures/numeric_distribution_by_target.png" width="800">
+</p>
+
+> 학업 성취 관련 변수들이 Dropout/Graduate 그룹 간 어떻게 차이를 보이는지 비교했습니다.  
+> Dropout 학생군은 성취도 지표(`Curricular units grade`, `enrolled`, `approved`)가 전반적으로 낮게 나타났습니다.
+
+---
+
+### 3-4. 수치형 변수 히스토그램 (Numeric Histogram by Target)
+<p align="center">
+  <img src="./figures/numeric_histogram_by_target.png" width="800">
+</p>
+
+> `Age at enrollment`, `Curricular units grade`, `Evaluations` 등 주요 변수의 분포를 시각화하여  
+> 이탈 학생의 연령대 및 학업 패턴의 특징을 파악했습니다.
+
+---
+
+### 3-5. 타깃 상관 변수 바그래프 (Target Correlation Bar)
+<p align="center">
+  <img src="./figures/target_correlation_bar.png" width="800">
+</p>
+
+> Dropout 여부(Target)와 각 주요 변수 간의 상관계수를 막대그래프로 표현했습니다.  
+> 재정 요인(`Debtor`, `Tuition fees up to date`)과 학업 성취 변수(`Curricular units grade`)가  
+> 모델 예측에 높은 기여도를 보였습니다.
+
+---
+
+### 3-6. 타깃 분포 (Target Distribution)
+<p align="center">
+  <img src="./figures/target_distribution.png" width="600">
+</p>
+
+> 전체 데이터에서 Dropout 학생의 비율은 약 40%로 확인되었으며,  
+> 데이터 불균형 문제 해결을 위해 `SMOTE` 및 `class_weight='balanced'` 기법을 병행 적용했습니다.
+
+### 사용 컬럼 요약  
 
 | 구분 | 컬럼 수 | 컬럼명 |
 |------|----------|--------|
