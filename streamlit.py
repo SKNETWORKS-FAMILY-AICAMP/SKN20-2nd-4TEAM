@@ -1381,104 +1381,110 @@ with tab_predict:
                 with st.expander('📋 입력한 데이터 확인하기', expanded=False):
                     st.json(json.dumps(input_data, ensure_ascii=False, indent=2))
             
-            # 더 강력한 스크롤 - 즉시 실행 + DOM 탐색 강화
+            # 더 강력한 스크롤 - 매번 작동하도록 고유 키 사용
             import streamlit.components.v1 as components
-            scroll_script = """
+            import time
+            
+            # 매번 다른 타임스탬프를 사용하여 컴포넌트가 매번 새로 렌더링되도록 함
+            timestamp = int(time.time() * 1000)  # 밀리초 단위 타임스탬프
+            
+            scroll_script = f"""
                 <script>
+                    // 고유 실행 ID: {timestamp}
+                    console.log('Scroll script loaded at: {timestamp}');
+                    
                     // 즉시 실행 함수
-                    (function() {
+                    (function() {{
                         let attempts = 0;
                         const maxAttempts = 30;
                         
-                        function performScroll() {
+                        function performScroll() {{
                             attempts++;
-                            console.log('Scroll attempt:', attempts);
+                            console.log('Scroll attempt:', attempts, '(ID: {timestamp})');
                             
-                            try {
+                            try {{
                                 const parent = window.parent;
-                                if (!parent || !parent.document) {
+                                if (!parent || !parent.document) {{
                                     console.log('Parent not available');
                                     return false;
-                                }
+                                }}
                                 
-                                // 앵커 찾기
                                 // 정확한 타겟 요소 찾기
                                 const targetElement = parent.document.querySelector('#tabs-bui2-tabpanel-0 > div > div:nth-child(4)');
                                 
-                                if (!targetElement) {
+                                if (!targetElement) {{
                                     console.log('Target element not found yet');
                                     return false;
-                                }
+                                }}
                                 
-                                console.log('Target element found!', targetElement);
+                                console.log('Target element found! (ID: {timestamp})', targetElement);
                                 
                                 const offset = -60;  // 60픽셀 위로
                                 
                                 // 방법 1: scrollIntoView로 정확하게 화면 최상단에 배치
-                                targetElement.scrollIntoView({ 
+                                targetElement.scrollIntoView({{ 
                                     behavior: 'smooth', 
                                     block: 'start',  // 화면 최상단에 정확히 배치
                                     inline: 'nearest'
-                                });
+                                }});
                                 
                                 // 방법 2: 모든 스크롤 가능한 부모 찾아서 부드럽게 스크롤
                                 let element = targetElement;
-                                while (element && element !== parent.document.body) {
-                                    if (element.scrollHeight > element.clientHeight) {
+                                while (element && element !== parent.document.body) {{
+                                    if (element.scrollHeight > element.clientHeight) {{
                                         console.log('Scrolling element:', element);
                                         const rect = targetElement.getBoundingClientRect();
                                         const elementRect = element.getBoundingClientRect();
                                         const targetPosition = rect.top - elementRect.top + element.scrollTop + offset;
                                         
-                                        // 부드러운 스크롤 적용 (60px 아래로)
-                                        element.scrollTo({
+                                        // 부드러운 스크롤 적용
+                                        element.scrollTo({{
                                             top: targetPosition,
                                             behavior: 'smooth'
-                                        });
-                                    }
+                                        }});
+                                    }}
                                     element = element.parentElement;
-                                }
+                                }}
                                 
-                                // 방법 3: 특정 컨테이너 직접 스크롤 (부드럽게)
+                                // 방법 3: 특정 컨테이너 직접 스크롤
                                 const mainContainer = parent.document.querySelector('[data-testid="stAppViewContainer"]');
-                                if (mainContainer) {
+                                if (mainContainer) {{
                                     console.log('Main container found');
                                     const targetTop = targetElement.getBoundingClientRect().top;
                                     const containerTop = mainContainer.getBoundingClientRect().top;
                                     const targetScroll = mainContainer.scrollTop + (targetTop - containerTop) + offset;
                                     
-                                    mainContainer.scrollTo({
+                                    mainContainer.scrollTo({{
                                         top: targetScroll,
                                         behavior: 'smooth'
-                                    });
-                                }
+                                    }});
+                                }}
                                 
-                                // 방법 4: window 스크롤 (부드럽게)
+                                // 방법 4: window 스크롤
                                 const rect = targetElement.getBoundingClientRect();
-                                parent.window.scrollBy({
+                                parent.window.scrollBy({{
                                     top: rect.top + offset,
                                     behavior: 'smooth'
-                                });
+                                }});
                                 
-                                console.log('Scroll executed successfully');
+                                console.log('Scroll executed successfully (ID: {timestamp})');
                                 return true;
                                 
-                            } catch (e) {
+                            }} catch (e) {{
                                 console.error('Scroll error:', e);
                                 return false;
-                            }
-                        }
+                            }}
+                        }}
                         
-                        // 예측 결과 렌더링 시작 후 빠르게 스크롤
-                        // 레이아웃 변화가 최소화되어 짧은 대기 시간으로 충분
-                        setTimeout(() => {
-                            // 한 번만 깔끔하게 스크롤
+                        // 예측 결과 렌더링 후 스크롤 실행
+                        setTimeout(() => {{
                             performScroll();
-                        }, 300);  // 0.3초 대기 - 빠른 반응
-                    })();
+                        }}, 300);  // 0.3초 대기
+                    }})();
                 </script>
             """
-            components.html(scroll_script, height=0)
+            # key 파라미터에 타임스탬프를 포함하여 매번 새로운 컴포넌트로 인식되게 함
+            components.html(scroll_script, height=0, scrolling=False)
         except Exception as exc:
             st.error(f'❌ 예측 중 오류가 발생했습니다: {exc}')
 
